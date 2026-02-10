@@ -7,15 +7,19 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS
-  app.enableCors();
+  app.enableCors({
+    origin: '*', // Allow all origins for development
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  });
 
   // Global Validation Pipe
   app.useGlobalPipes(new ValidationPipe());
 
   // Swagger Configuration
   const config = new DocumentBuilder()
-    .setTitle('Bharat Business API')
-    .setDescription('The Bharat Business API description')
+    .setTitle('Bharat Business Deals API')
+    .setDescription('The Bharat Business Deals API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

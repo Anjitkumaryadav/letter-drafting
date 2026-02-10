@@ -65,10 +65,16 @@ const DraftPreview: React.FC = () => {
     const handleDownloadPDF = () => {
         const element = document.getElementById('letter-preview');
         const opt = {
-            margin: [10, 10, 10, 10], // top, left, bottom, right
+            margin: 0, // No margin, we control it via CSS
             filename: `${draft?.subject || 'letter'}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            image: { type: 'jpeg', quality: 1 }, // Max quality
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: true,
+                letterRendering: true,
+                windowWidth: 794 // A4 width in px at 96 DPI approx (210mm)
+            },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 

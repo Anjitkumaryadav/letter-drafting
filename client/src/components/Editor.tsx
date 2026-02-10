@@ -17,6 +17,12 @@ const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, placeho
     const editorRef = useRef<HTMLDivElement>(null);
     const quillInstance = useRef<Quill | null>(null);
     const isInternalChange = useRef(false);
+    const onChangeRef = useRef(onChange);
+
+    // Keep the ref updated with the latest callback
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    }, [onChange]);
 
     useImperativeHandle(ref, () => ({
         getEditor: () => quillInstance.current
@@ -40,11 +46,12 @@ const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, placeho
             });
 
             quillInstance.current.on('text-change', () => {
-                if (onChange) {
+                // Use the ref to get the latest handler
+                if (onChangeRef.current) {
                     isInternalChange.current = true;
                     // Get HTML content
                     const content = editorRef.current?.querySelector('.ql-editor')?.innerHTML || '';
-                    onChange(content);
+                    onChangeRef.current(content);
                 }
             });
         }

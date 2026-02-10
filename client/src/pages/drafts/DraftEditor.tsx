@@ -144,7 +144,7 @@ const DraftEditor: React.FC = () => {
                             <input
                                 type="checkbox"
                                 checked={formData.includeSeal}
-                                onChange={(e) => setFormData({ ...formData, includeSeal: e.target.checked })}
+                                onChange={(e) => setFormData(prev => ({ ...prev, includeSeal: e.target.checked }))}
                                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             />
                             <span>Include Seal</span>
@@ -180,7 +180,7 @@ const DraftEditor: React.FC = () => {
                             <select
                                 className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 bg-white"
                                 value={formData.businessId}
-                                onChange={(e) => setFormData({ ...formData, businessId: e.target.value })}
+                                onChange={(e) => setFormData(prev => ({ ...prev, businessId: e.target.value }))}
                             >
                                 <option value="">Select Business</option>
                                 {businesses.map(b => (
@@ -194,7 +194,7 @@ const DraftEditor: React.FC = () => {
                             <select
                                 className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 bg-white"
                                 value={formData.recipientId}
-                                onChange={(e) => setFormData({ ...formData, recipientId: e.target.value })}
+                                onChange={(e) => setFormData(prev => ({ ...prev, recipientId: e.target.value }))}
                             >
                                 <option value="">Select Recipient</option>
                                 {recipients.map(r => (
@@ -210,7 +210,7 @@ const DraftEditor: React.FC = () => {
                                 className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="ex. REF/2024/001"
                                 value={formData.refNo}
-                                onChange={(e) => setFormData({ ...formData, refNo: e.target.value })}
+                                onChange={(e) => setFormData(prev => ({ ...prev, refNo: e.target.value }))}
                             />
                         </div>
 
@@ -220,7 +220,7 @@ const DraftEditor: React.FC = () => {
                                 type="date"
                                 className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
                                 value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
                             />
                         </div>
                     </div>
@@ -232,7 +232,7 @@ const DraftEditor: React.FC = () => {
                             className="w-full text-xl font-bold border-none focus:ring-0 placeholder-gray-300"
                             placeholder="Subject: Enter letter subject here..."
                             value={formData.subject}
-                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                            onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                         />
                     </div>
 
@@ -241,7 +241,7 @@ const DraftEditor: React.FC = () => {
                         <Editor
                             ref={quillRef} // Now using our custom forwarded ref
                             value={formData.content}
-                            onChange={(value) => setFormData({ ...formData, content: value })}
+                            onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
                             className="h-full"
                             placeholder="Start writing your letter..."
                         />

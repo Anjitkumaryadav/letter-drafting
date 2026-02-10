@@ -12,7 +12,7 @@ const Home: React.FC = () => {
                 <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
-                            <Link to="/" className="text-xl font-bold text-blue-600">Bharat Business</Link>
+                            <Link to="/" className="text-xl font-bold text-blue-600">Bharat Business Deals</Link>
                         </div>
                         <div className="flex items-center space-x-4">
                             <span className="text-gray-700">Welcome, {user?.name}</span>
