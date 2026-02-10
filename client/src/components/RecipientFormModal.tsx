@@ -46,9 +46,9 @@ const RecipientFormModal: React.FC<RecipientFormModalProps> = ({ isOpen, onClose
         setLoading(true);
         try {
             if (recipient) {
-                await axios.patch(`http://localhost:3000/recipients/${recipient._id}`, formData);
+                await axios.patch(`https://kk01km6g-3000.inc1.devtunnels.ms/recipients/${recipient._id}`, formData);
             } else {
-                await axios.post('http://localhost:3000/recipients', formData);
+                await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/recipients', formData);
             }
             onSuccess();
             onClose();

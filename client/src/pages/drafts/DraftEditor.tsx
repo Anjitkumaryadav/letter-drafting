@@ -64,8 +64,8 @@ const DraftEditor: React.FC = () => {
     const fetchResources = async () => {
         try {
             const [busRes, recRes] = await Promise.all([
-                axios.get('http://localhost:3000/businesses'),
-                axios.get('http://localhost:3000/recipients')
+                axios.get('https://kk01km6g-3000.inc1.devtunnels.ms/businesses'),
+                axios.get('https://kk01km6g-3000.inc1.devtunnels.ms/recipients')
             ]);
             setBusinesses(busRes.data);
             setRecipients(recRes.data);
@@ -76,7 +76,7 @@ const DraftEditor: React.FC = () => {
 
     const fetchDraft = async (draftId: string) => {
         try {
-            const response = await axios.get(`http://localhost:3000/drafts/${draftId}`);
+            const response = await axios.get(`https://kk01km6g-3000.inc1.devtunnels.ms/drafts/${draftId}`);
             const draft = response.data;
             setFormData({
                 businessId: draft.businessId?._id || draft.businessId || '',
@@ -104,10 +104,10 @@ const DraftEditor: React.FC = () => {
 
         try {
             if (id) {
-                await axios.patch(`http://localhost:3000/drafts/${id}`, payload);
+                await axios.patch(`https://kk01km6g-3000.inc1.devtunnels.ms/drafts/${id}`, payload);
                 setLastSaved(new Date());
             } else {
-                const response = await axios.post('http://localhost:3000/drafts', payload);
+                const response = await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/drafts', payload);
                 navigate(`/drafts/${response.data._id}`, { replace: true });
                 setLastSaved(new Date());
             }

@@ -30,7 +30,7 @@ const BusinessForm: React.FC = () => {
 
     const fetchBusiness = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/businesses/${id}`);
+            const response = await axios.get(`https://kk01km6g-3000.inc1.devtunnels.ms/businesses/${id}`);
             setFormData(response.data);
         } catch (error) {
             console.error('Error fetching business:', error);
@@ -52,7 +52,7 @@ const BusinessForm: React.FC = () => {
         uploadData.append('file', file);
 
         try {
-            const response = await axios.post('http://localhost:3000/upload', uploadData, {
+            const response = await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/upload', uploadData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setFormData((prev) => ({ ...prev, [field]: response.data.url }));
@@ -69,9 +69,9 @@ const BusinessForm: React.FC = () => {
         setLoading(true);
         try {
             if (isEditing) {
-                await axios.patch(`http://localhost:3000/businesses/${id}`, formData);
+                await axios.patch(`https://kk01km6g-3000.inc1.devtunnels.ms/businesses/${id}`, formData);
             } else {
-                await axios.post('http://localhost:3000/businesses', formData);
+                await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/businesses', formData);
             }
             navigate('/');
         } catch (error) {

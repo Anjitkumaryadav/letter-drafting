@@ -21,7 +21,7 @@ const BusinessList: React.FC = () => {
 
     const fetchBusinesses = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/businesses');
+            const response = await axios.get('https://kk01km6g-3000.inc1.devtunnels.ms/businesses');
             setBusinesses(response.data);
         } catch (error) {
             console.error('Error fetching businesses:', error);
@@ -33,7 +33,7 @@ const BusinessList: React.FC = () => {
     const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to delete this business?')) return;
         try {
-            await axios.delete(`http://localhost:3000/businesses/${id}`);
+            await axios.delete(`https://kk01km6g-3000.inc1.devtunnels.ms/businesses/${id}`);
             setBusinesses(businesses.filter((b) => b._id !== id));
         } catch (error) {
             console.error('Error deleting business:', error);

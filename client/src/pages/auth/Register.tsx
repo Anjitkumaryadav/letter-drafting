@@ -18,7 +18,7 @@ const Register: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await axios.post('http://localhost:3000/auth/register', { name, email, password });
+            const response = await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/auth/register', { name, email, password });
             login(response.data.access_token, response.data.user);
             navigate('/');
         } catch (err: any) {

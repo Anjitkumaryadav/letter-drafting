@@ -50,7 +50,7 @@ const DraftPreview: React.FC = () => {
     useEffect(() => {
         const fetchDraft = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/drafts/${id}`);
+                const response = await axios.get(`https://kk01km6g-3000.inc1.devtunnels.ms/drafts/${id}`);
                 setDraft(response.data);
             } catch (error) {
                 console.error('Error fetching draft:', error);
@@ -124,7 +124,7 @@ const DraftPreview: React.FC = () => {
         if (!draft || !window.confirm('Are you sure you want to finalize this letter? This will lock the draft.')) return;
 
         try {
-            await axios.patch(`http://localhost:3000/drafts/${id}`, { status: 'FINAL' });
+            await axios.patch(`https://kk01km6g-3000.inc1.devtunnels.ms/drafts/${id}`, { status: 'FINAL' });
             alert('Letter finalized successfully!');
             navigate('/');
         } catch (error) {
@@ -185,7 +185,7 @@ const DraftPreview: React.FC = () => {
                 <header className="flex items-center border-b-2 border-gray-800 pb-6 mb-8">
                     {business.logo && (
                         <img
-                            src={`http://localhost:3000${business.logo}`}
+                            src={`https://kk01km6g-3000.inc1.devtunnels.ms${business.logo}`}
                             alt="Logo"
                             crossOrigin="anonymous"
                             className="h-24 w-24 object-contain mr-6"
@@ -237,7 +237,7 @@ const DraftPreview: React.FC = () => {
                     <div className="h-32 w-48 flex items-center justify-center relative my-4">
                         {draft.includeSeal && business.seal ? (
                             <img
-                                src={`http://localhost:3000${business.seal}`}
+                                src={`https://kk01km6g-3000.inc1.devtunnels.ms${business.seal}`}
                                 alt="Seal"
                                 crossOrigin="anonymous"
                                 className="h-28 w-28 object-contain opacity-90 rotate-[-10deg]"

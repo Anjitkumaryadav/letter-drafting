@@ -33,7 +33,7 @@ export class UploadController {
     }))
     uploadFile(@UploadedFile() file: Express.Multer.File) {
         return {
-            url: `http://localhost:3000/uploads/${file.filename}`,
+            url: `https://kk01km6g-3000.inc1.devtunnels.ms/uploads/${file.filename}`,
         };
     }
 
