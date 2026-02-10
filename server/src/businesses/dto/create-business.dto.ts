@@ -30,7 +30,17 @@ export class CreateBusinessDto {
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    logoUrl?: string;
+    headerImage?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    footerImage?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    logoUrl?: string; // Kept for backward compatibility
 
     @ApiPropertyOptional()
     @IsOptional()

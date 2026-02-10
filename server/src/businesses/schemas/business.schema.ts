@@ -24,7 +24,10 @@ export class Business {
     website: string;
 
     @Prop()
-    logoUrl: string;
+    headerImage: string; // Renamed from logoUrl
+
+    @Prop()
+    footerImage: string; // New field
 
     @Prop()
     sealUrl: string;

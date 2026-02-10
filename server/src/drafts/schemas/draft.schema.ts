@@ -31,6 +31,9 @@ export class Draft {
 
     @Prop({ default: false })
     includeSeal: boolean;
+
+    @Prop({ type: Object })
+    layout: any; // Stores x,y positions of elements
 }
 
 export const DraftSchema = SchemaFactory.createForClass(Draft);

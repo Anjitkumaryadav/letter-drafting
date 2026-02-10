@@ -9,6 +9,7 @@ import { BusinessesModule } from './businesses/businesses.module';
 import { UploadModule } from './upload/upload.module';
 import { RecipientsModule } from './recipients/recipients.module';
 import { DraftsModule } from './drafts/drafts.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -39,6 +40,7 @@ import { join } from 'path';
     UploadModule,
     RecipientsModule,
     DraftsModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

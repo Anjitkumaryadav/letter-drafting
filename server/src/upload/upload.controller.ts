@@ -1,14 +1,13 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
 import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { createReadStream } from 'fs';
-import type { Response } from 'express';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @ApiTags('upload')
 @Controller('upload')
 export class UploadController {
+    constructor(private readonly cloudinaryService: CloudinaryService) { }
+
     @Post()
     @ApiConsumes('multipart/form-data')
     @ApiBody({
@@ -22,24 +21,11 @@ export class UploadController {
             },
         },
     })
-    @UseInterceptors(FileInterceptor('file', {
-        storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, cb) => {
-                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-                return cb(null, `${randomName}${extname(file.originalname)}`);
-            },
-        }),
-    }))
-    uploadFile(@UploadedFile() file: Express.Multer.File) {
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadFile(@UploadedFile() file: Express.Multer.File) {
+        const result = await this.cloudinaryService.uploadImage(file);
         return {
-            url: `https://kk01km6g-3000.inc1.devtunnels.ms/uploads/${file.filename}`,
+            url: result.secure_url,
         };
-    }
-
-    @Get(':filename')
-    getFile(@Param('filename') filename: string, @Res() res: Response) {
-        const file = createReadStream(join(process.cwd(), 'uploads', filename));
-        file.pipe(res);
     }
 }

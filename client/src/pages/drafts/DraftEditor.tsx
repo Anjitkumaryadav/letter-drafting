@@ -9,6 +9,9 @@ import AIAssistantPanel from '../../components/AIAssistantPanel';
 interface Business {
     _id: string;
     name: string;
+    headerImage?: string;
+    footerImage?: string;
+    sealUrl?: string;
 }
 
 interface Recipient {
@@ -33,7 +36,8 @@ const DraftEditor: React.FC = () => {
         subject: '',
         content: '',
         status: 'DRAFT',
-        includeSeal: false
+        includeSeal: false, // Default is false per requirement
+        layout: null as any // Store layout configuration
     });
 
     const [loading, setLoading] = useState(true);
@@ -86,7 +90,8 @@ const DraftEditor: React.FC = () => {
                 subject: draft.subject || '',
                 content: draft.content || '',
                 status: draft.status || 'DRAFT',
-                includeSeal: draft.includeSeal || false
+                includeSeal: draft.includeSeal || false,
+                layout: draft.layout || null
             });
         } catch (error) {
             console.error('Error fetching draft:', error);
@@ -147,7 +152,7 @@ const DraftEditor: React.FC = () => {
                                 onChange={(e) => setFormData(prev => ({ ...prev, includeSeal: e.target.checked }))}
                                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             />
-                            <span>Include Seal</span>
+                            <span>Include Seal (Optional)</span>
                         </label>
                         <button
                             onClick={() => navigate(`/drafts/${id}/preview`)}

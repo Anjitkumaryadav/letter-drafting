@@ -7,7 +7,9 @@ interface Business {
     _id: string;
     name: string;
     address: string;
-    logoUrl?: string;
+    headerImage?: string;
+    footerImage?: string;
+    logoUrl?: string; // Legacy support
     sealUrl?: string;
 }
 
@@ -82,8 +84,8 @@ const BusinessList: React.FC = () => {
                         {businesses.map((business) => (
                             <div key={business._id} className="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-md">
                                 <div className="h-32 bg-gray-100 flex items-center justify-center">
-                                    {business.logoUrl ? (
-                                        <img src={business.logoUrl} alt={business.name} className="object-contain w-full h-full p-4" />
+                                    {business.headerImage || business.logoUrl ? (
+                                        <img src={(business.headerImage || business.logoUrl || '').startsWith('http') ? (business.headerImage || business.logoUrl) : `https://kk01km6g-3000.inc1.devtunnels.ms${business.headerImage || business.logoUrl}`} alt={business.name} className="object-contain w-full h-full p-4" />
                                     ) : (
                                         <Building size={48} className="text-gray-300" />
                                     )}
