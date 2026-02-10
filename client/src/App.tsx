@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import AxiosInterceptor from './components/AxiosInterceptor';
 import Login from './pages/auth/Login';
+
 import Register from './pages/auth/Register';
 import BusinessList from './pages/businesses/BusinessList';
 import BusinessForm from './pages/businesses/BusinessForm';
@@ -16,6 +18,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <AxiosInterceptor />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
