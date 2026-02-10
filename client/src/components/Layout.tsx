@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, LayoutDashboard, Building2, Users, FileText } from 'lucide-react';
+import { LogOut, Building2, Users, FileText } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const Layout: React.FC = () => {

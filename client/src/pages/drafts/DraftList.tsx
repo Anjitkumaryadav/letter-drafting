@@ -141,12 +141,13 @@ const DraftList: React.FC = () => {
 
         try {
             const opt = {
-                margin: [10, 10, 10, 10],
+                margin: [10, 10, 10, 10] as [number, number, number, number],
                 filename: `${draft.subject || 'letter'}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
+                image: { type: 'jpeg' as const, quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
             };
+            if (!element) return;
             await html2pdf().set(opt).from(element).save();
         } catch (e) {
             console.error(e);
@@ -169,7 +170,7 @@ const DraftList: React.FC = () => {
 
         try {
             const blob = await asBlob(htmlContent);
-            saveAs(blob, `${draft.subject || 'letter'}.docx`);
+            saveAs(blob as Blob, `${draft.subject || 'letter'}.docx`);
         } catch (error) {
             console.error('DOCX generation failed:', error);
             alert('Failed to generate DOCX');

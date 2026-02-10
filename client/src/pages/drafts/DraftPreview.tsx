@@ -67,7 +67,7 @@ const DraftPreview: React.FC = () => {
         const opt = {
             margin: 0, // No margin, we control it via CSS
             filename: `${draft?.subject || 'letter'}.pdf`,
-            image: { type: 'jpeg', quality: 1 }, // Max quality
+            image: { type: 'jpeg' as const, quality: 1 }, // Max quality
             html2canvas: {
                 scale: 2,
                 useCORS: true,
@@ -75,10 +75,12 @@ const DraftPreview: React.FC = () => {
                 letterRendering: true,
                 windowWidth: 794 // A4 width in px at 96 DPI approx (210mm)
             },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
         };
 
-        html2pdf().set(opt).from(element).save();
+        if (element) {
+            html2pdf().set(opt).from(element).save();
+        }
     };
 
     const handleDownloadDOC = async () => {
@@ -113,7 +115,7 @@ const DraftPreview: React.FC = () => {
 
         try {
             const blob = await asBlob(htmlContent);
-            saveAs(blob, `${draft.subject || 'letter'}.docx`);
+            saveAs(blob as Blob, `${draft.subject || 'letter'}.docx`);
         } catch (error) {
             console.error('DOCX generation failed:', error);
             alert('Failed to generate DOCX');

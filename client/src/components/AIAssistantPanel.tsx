@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Copy, ArrowRight, X, Loader2, Sparkles } from 'lucide-react';
+import { Send, Copy, ArrowRight, X, Loader2, Sparkles } from 'lucide-react';
 
 interface AIAssistantPanelProps {
     onInsert: (text: string) => void;
@@ -23,7 +23,7 @@ const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ onInsert, isOpen, o
             });
 
             worker.current.onmessage = (event: MessageEvent) => {
-                const { status, output, file, progress } = event.data;
+                const { status, output, progress } = event.data;
 
                 if (status === 'initiate') {
                     setModelLoading(true);

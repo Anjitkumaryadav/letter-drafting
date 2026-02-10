@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Plus, Search, Edit2, Trash2, Users } from 'lucide-react';
 import RecipientFormModal from '../../components/RecipientFormModal';
-import { Link } from 'react-router-dom';
+
 
 interface Recipient {
     _id: string;
