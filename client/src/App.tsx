@@ -4,8 +4,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import AxiosInterceptor from './components/AxiosInterceptor';
 import Login from './pages/auth/Login';
-
 import Register from './pages/auth/Register';
+import AdminVerify from './pages/admin/AdminVerify';
 import BusinessList from './pages/businesses/BusinessList';
 import BusinessForm from './pages/businesses/BusinessForm';
 import RecipientList from './pages/recipients/RecipientList';
@@ -22,7 +22,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
+          <Route element={<Layout />}>
+            <Route path="/admin/verify" element={<AdminVerify />} />
+          </Route>
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<DraftList />} />
