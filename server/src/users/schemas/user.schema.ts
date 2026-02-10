@@ -16,6 +16,15 @@ export class User {
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Business' }], default: [] })
     businesses: Types.ObjectId[];
+
+    @Prop({ default: false })
+    verifyAccount: boolean;
+
+    @Prop({ default: false })
+    admin: boolean;
+
+    @Prop({ required: true })
+    phone: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -26,13 +26,22 @@ export class AuthService {
         if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
             throw new UnauthorizedException('Invalid credentials');
         }
-        const payload = { email: user.email, sub: user._id };
+
+        // Check verification (skip for admins)
+        if (!user.verifyAccount && !user.admin) {
+            throw new UnauthorizedException('Your account has not been approved yet.');
+        }
+
+        const payload = { email: user.email, sub: user._id, admin: user.admin };
         return {
             access_token: this.jwtService.sign(payload),
             user: {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                phone: user.phone,
+                admin: user.admin,
+                verifyAccount: user.verifyAccount
             },
         };
     }
@@ -43,10 +52,18 @@ export class AuthService {
             throw new ConflictException('Email already exists');
         }
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+
+        // Force critical fields to false
         const user = await this.usersService.create({
             ...registerDto,
             password: hashedPassword,
+            verifyAccount: false,
+            admin: false,
         });
-        return this.login({ email: registerDto.email, password: registerDto.password });
+
+        // Do not auto-login
+        return {
+            message: "Registration successful. Your account is pending approval by admin."
+        };
     }
 }

@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
+// import { useAuth } from '../../context/AuthContext'; // Unused
 import { Lock, Mail, User } from 'lucide-react';
 
 const Register: React.FC = () => {
     const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    // const { login } = useAuth(); // Unused
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -18,9 +19,9 @@ const Register: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/auth/register', { name, email, password });
-            login(response.data.access_token, response.data.user);
-            navigate('/');
+            await axios.post('https://kk01km6g-3000.inc1.devtunnels.ms/auth/register', { name, phone, email, password });
+            alert('Registration successful. Your account is pending approval by admin.');
+            navigate('/login');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
         } finally {
@@ -45,6 +46,23 @@ const Register: React.FC = () => {
                                 className="w-full py-2 pl-10 pr-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block mb-2 text-sm font-medium text-gray-600">Phone Number</label>
+                        <div className="relative">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <User size={18} />
+                            </span>
+                            <input
+                                type="tel"
+                                className="w-full py-2 pl-10 pr-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                                 required
                             />
                         </div>
@@ -90,8 +108,8 @@ const Register: React.FC = () => {
                 <p className="mt-4 text-sm text-center text-gray-600">
                     Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
                 </p>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
