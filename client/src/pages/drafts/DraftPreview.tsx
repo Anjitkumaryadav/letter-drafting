@@ -39,6 +39,7 @@ interface LayoutItem {
     x: number;
     y: number;
     w?: number; // width in mm (optional)
+    hidden?: boolean;
 }
 
 interface LayoutConfig {
@@ -61,7 +62,7 @@ const DEFAULT_LAYOUT: LayoutConfig = {
     recipient: { x: 20, y: 70 },
     subject: { x: 20, y: 110 },
     content: { x: 20, y: 130 },
-    seal: { x: 150, y: 220 },
+    seal: { x: 150, y: 220, hidden: false },
     signatory: { x: 150, y: 250 },
     footer: { x: 0, y: 280 }
 };
@@ -147,6 +148,16 @@ const DraftPreview: React.FC = () => {
         setDraggingItem(null);
     };
 
+    const handleHideItem = (e: React.MouseEvent, item: keyof LayoutConfig) => {
+        e.stopPropagation();
+        if (window.confirm(`Remove ${item} from layout?`)) {
+            setLayout(prev => ({
+                ...prev,
+                [item]: { ...prev[item], hidden: true }
+            }));
+        }
+    };
+
     const handleSaveLayout = async () => {
         if (!draft) return;
         try {
@@ -168,23 +179,69 @@ const DraftPreview: React.FC = () => {
 
     const handleDownloadPDF = () => {
         const element = document.getElementById('letter-preview-content');
+        if (!element) return;
+
+        // Clone the element to manipulate for PDF generation (remove interactions, etc.)
+        const clone = element.cloneNode(true) as HTMLElement;
+
+        // Hide elements that shouldn't be in PDF if they are hidden in layout
+        // (Visual hiding in preview handles this via 'hidden' class or null render, 
+        // but if we cloned, they might be there if we used CSS visibility? 
+        // Our renderItem returns null, so they aren't in DOM)
+
+        // 1. Generate PDF content without Footer (we'll add it manually)
         const opt = {
-            margin: 0,
+            margin: 0, // No margins, we handle layout
             filename: `${draft?.subject || 'letter'}.pdf`,
-            image: { type: 'jpeg' as const, quality: 1 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                logging: true,
-                letterRendering: true,
-                windowWidth: 794
-            },
+            image: { type: 'jpeg' as const, quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true, windowWidth: 794 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
         };
 
-        if (element) {
-            html2pdf().set(opt).from(element).save();
-        }
+        // We need to temporarily remove the footer from the clone if it exists there
+        // Actually, our renderItem puts footer in normal flow absolute pos. 
+        // If we want it on every page, we should remove it from DOM and add via jsPDF
+        const footerImg = business?.footerImage
+            ? (business.footerImage.startsWith('http') ? business.footerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.footerImage}`)
+            : null;
+
+        // Hide footer in the clone so it doesn't appear only on last page
+        const footerEl = clone.querySelector('[data-type="footer"]');
+        if (footerEl) (footerEl as HTMLElement).style.display = 'none';
+
+        // Same for header - user wants it ONLY on first page. 
+        // Since our HTML structure has it at top, it naturally appears on Page 1. 
+        // If content spills, it won't repeat. This is correct per requirements.
+
+        html2pdf().set(opt).from(clone).toPdf().get('pdf').then((pdf: any) => {
+            const totalPages = pdf.internal.getNumberOfPages();
+
+            // Add Footer to all pages
+            if (footerImg) {
+                let footerHeight = 25; // Default fallback in mm
+                const originalFooter = element.querySelector('div[data-type="footer"] img') as HTMLImageElement;
+                const pageWidth = pdf.internal.pageSize.getWidth();
+
+                if (originalFooter && originalFooter.naturalWidth > 0) {
+                    const ratio = originalFooter.naturalHeight / originalFooter.naturalWidth;
+                    footerHeight = pageWidth * ratio;
+                }
+
+                const pageHeight = pdf.internal.pageSize.getHeight();
+
+                for (let i = 1; i <= totalPages; i++) {
+                    pdf.setPage(i);
+                    try {
+                        // addImage(imageData, format, x, y, w, h)
+                        pdf.addImage(footerImg, 'PNG', 0, pageHeight - footerHeight, pageWidth, footerHeight);
+                    } catch (e) {
+                        console.error("Error adding footer to PDF page " + i, e);
+                    }
+                }
+            }
+
+            pdf.save(`${draft?.subject || 'letter'}.pdf`);
+        });
     };
 
     const handleDownloadDOC = async () => {
@@ -256,14 +313,36 @@ const DraftPreview: React.FC = () => {
             zIndex: draggingItem === key ? 10 : 1
         };
 
+        if (pos.hidden && !isCustomizing) return null;
+
         return (
             <div
                 style={style}
-                className={className}
+                className={`${className} ${pos.hidden ? 'opacity-50 border-red-300 border-2' : ''}`}
                 onMouseDown={(e) => handleMouseDown(e, key)}
             >
                 {/* Visual guide for drag handle if needed, or just drag whole element */}
-                {isCustomizing && <div className="absolute -top-3 -right-3 bg-blue-500 rounded-full p-1 opacity-50 hover:opacity-100"><Move size={8} color="white" /></div>}
+                {isCustomizing && (
+                    <>
+                        <div className="absolute -top-3 -right-3 bg-blue-500 rounded-full p-1 opacity-50 hover:opacity-100 cursor-move z-20">
+                            <Move size={8} color="white" />
+                        </div>
+                        {!pos.hidden && (
+                            <div
+                                className="absolute -top-3 -left-3 bg-red-500 rounded-full p-1 opacity-50 hover:opacity-100 cursor-pointer z-20"
+                                onClick={(e) => handleHideItem(e, key)}
+                                title="Hide item"
+                            >
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </div>
+                        )}
+                        {pos.hidden && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-200/50 text-xs font-bold text-red-500 pointer-events-none">
+                                HIDDEN
+                            </div>
+                        )}
+                    </>
+                )}
                 {content}
             </div>
         );
@@ -318,7 +397,7 @@ const DraftPreview: React.FC = () => {
             >
                 <div
                     id="letter-preview-content"
-                    className="bg-white shadow-2xl w-[210mm] h-[297mm] relative mx-auto print:shadow-none print:w-full overflow-hidden"
+                    className="bg-white shadow-2xl w-[210mm] min-h-[297mm] relative mx-auto print:shadow-none print:w-full overflow-hidden pb-20"
                 >
                     {/* Header Image */}
                     {renderItem('header', business.headerImage ? (
@@ -370,9 +449,11 @@ const DraftPreview: React.FC = () => {
                         />
                     ))}
 
-                    {/* Footer Image */}
+                    {/* Footer Image - Rendered for screen/single page preview, but excluded/handled manually in PDF export */}
                     {renderItem('footer', business.footerImage ? (
-                        <img src={business.footerImage.startsWith('http') ? business.footerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.footerImage}`} alt="Footer" className="w-[210mm] object-contain" />
+                        <div data-type="footer">
+                            <img src={business.footerImage.startsWith('http') ? business.footerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.footerImage}`} alt="Footer" className="w-[210mm] object-contain" />
+                        </div>
                     ) : null)}
 
                 </div>

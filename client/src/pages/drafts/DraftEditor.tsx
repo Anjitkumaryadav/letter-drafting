@@ -132,17 +132,21 @@ const DraftEditor: React.FC = () => {
         <div className="min-h-screen bg-gray-100 flex flex-col">
             {/* Header / Toolbar */}
             <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
-                <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                        <Link to="/" className="text-gray-500 hover:text-gray-700">
-                            <ArrowLeft size={20} />
-                        </Link>
-                        <h1 className="text-lg font-semibold text-gray-800">
-                            {formData.subject || 'Untitled Draft'}
-                        </h1>
-                        <span className="text-xs text-gray-400">
-                            {lastSaved ? `Saved ${format(lastSaved, 'HH:mm:ss')}` : 'Unsaved'}
-                        </span>
+                <div className="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+                    <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
+                        <div className="flex items-center space-x-4">
+                            <Link to="/" className="text-gray-500 hover:text-gray-700">
+                                <ArrowLeft size={20} />
+                            </Link>
+                            <div>
+                                <h1 className="text-lg font-semibold text-gray-800 truncate max-w-[200px] sm:max-w-xs">
+                                    {formData.subject || 'Untitled Draft'}
+                                </h1>
+                                <span className="text-xs text-gray-400 block">
+                                    {lastSaved ? `Saved ${format(lastSaved, 'HH:mm:ss')}` : 'Unsaved'}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div className="flex items-center space-x-3">
                         <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
