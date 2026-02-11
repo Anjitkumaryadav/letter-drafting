@@ -25,6 +25,15 @@ export class User {
 
     @Prop({ required: true })
     phone: string;
+
+    @Prop({ default: false })
+    isHeld: boolean;
+
+    @Prop({ default: false })
+    isDeleted: boolean;
+
+    @Prop({ required: false })
+    deletedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
