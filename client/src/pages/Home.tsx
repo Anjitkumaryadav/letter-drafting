@@ -16,6 +16,13 @@ const Home: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-4">
                             <span className="text-gray-700">Welcome, {user?.name}</span>
+                            <Link to="/login"><button
+                                onClick={logout}
+                                className="flex items-center px-3 py-2 text-sm text-red-600 transition rounded hover:bg-red-50"
+                            >
+                                <LogOut size={16} className="mr-1" />
+                                Logout
+                            </button></Link>
                             <button
                                 onClick={logout}
                                 className="flex items-center px-3 py-2 text-sm text-red-600 transition rounded hover:bg-red-50"

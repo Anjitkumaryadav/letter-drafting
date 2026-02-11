@@ -21,11 +21,36 @@ export class UsersService {
     }
 
     async findPending(): Promise<User[]> {
-        return this.userModel.find({ verifyAccount: false, admin: false }).sort({ createdAt: -1 }).exec();
+        return this.userModel.find({ verifyAccount: false, admin: false, isDeleted: false }).sort({ createdAt: -1 }).exec();
+    }
+
+    async findActive(): Promise<User[]> {
+        return this.userModel.find({ verifyAccount: true, isDeleted: false }).sort({ createdAt: -1 }).exec();
+    }
+
+    async findDeleted(): Promise<User[]> {
+        return this.userModel.find({ isDeleted: true }).sort({ deletedAt: -1 }).exec();
     }
 
     async approve(id: string): Promise<User | null> {
         return this.userModel.findByIdAndUpdate(id, { verifyAccount: true }, { new: true }).exec();
+    }
+
+    async hold(id: string): Promise<User | null> {
+        return this.userModel.findByIdAndUpdate(id, { isHeld: true }, { new: true }).exec();
+    }
+
+    async unhold(id: string): Promise<User | null> {
+        return this.userModel.findByIdAndUpdate(id, { isHeld: false }, { new: true }).exec();
+    }
+
+    async softDelete(id: string): Promise<User | null> {
+        // This is a soft delete
+        return this.userModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date() }, { new: true }).exec();
+    }
+
+    async restore(id: string): Promise<User | null> {
+        return this.userModel.findByIdAndUpdate(id, { isDeleted: false, deletedAt: null }, { new: true }).exec();
     }
 
     async delete(id: string): Promise<User | null> {

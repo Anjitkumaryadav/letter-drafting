@@ -28,6 +28,14 @@ export class AuthService {
         }
 
         // Check verification (skip for admins)
+        if (user.isDeleted) {
+            throw new UnauthorizedException('Account does not exist');
+        }
+
+        if (user.isHeld) {
+            throw new UnauthorizedException('Your account is on hold. Please contact admin.');
+        }
+
         if (!user.verifyAccount && !user.admin) {
             throw new UnauthorizedException('Your account has not been approved yet.');
         }
