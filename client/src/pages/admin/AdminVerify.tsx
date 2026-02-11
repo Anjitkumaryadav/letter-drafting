@@ -25,7 +25,7 @@ const AdminVerify: React.FC = () => {
 
     const fetchPendingUsers = async () => {
         try {
-            const response = await axios.get('https://kk01km6g-3000.inc1.devtunnels.ms/users/pending');
+            const response = await axios.get('https://letter-drafting.onrender.com/users/pending');
             setUsers(response.data);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to fetch users');
@@ -38,7 +38,7 @@ const AdminVerify: React.FC = () => {
         if (!window.confirm('Are you sure you want to approve this user?')) return;
         setActionLoading(id);
         try {
-            await axios.patch(`https://kk01km6g-3000.inc1.devtunnels.ms/users/${id}/approve`);
+            await axios.patch(`https://letter-drafting.onrender.com/users/${id}/approve`);
             setUsers(users.filter(u => u._id !== id));
         } catch (err: any) {
             alert(err.response?.data?.message || 'Failed to approve user');
@@ -51,7 +51,7 @@ const AdminVerify: React.FC = () => {
         if (!window.confirm('Are you sure you want to reject (delete) this user?')) return;
         setActionLoading(id);
         try {
-            await axios.delete(`https://kk01km6g-3000.inc1.devtunnels.ms/users/${id}`);
+            await axios.delete(`https://letter-drafting.onrender.com/users/${id}`);
             setUsers(users.filter(u => u._id !== id));
         } catch (err: any) {
             alert(err.response?.data?.message || 'Failed to reject user');
