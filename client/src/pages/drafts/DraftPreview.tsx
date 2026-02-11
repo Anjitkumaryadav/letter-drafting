@@ -83,8 +83,28 @@ const DraftPreview: React.FC = () => {
     const [layout, setLayout] = useState<LayoutConfig>(DEFAULT_LAYOUT);
     const [draggingItem, setDraggingItem] = useState<keyof LayoutConfig | null>(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+    const [scale, setScale] = useState(1);
 
     const previewRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const screenWidth = window.innerWidth;
+            const containerPadding = 32;
+            const availableWidth = screenWidth - containerPadding;
+            const refWidth = 794; // approx 210mm in px
+
+            if (availableWidth < refWidth) {
+                setScale(availableWidth / refWidth);
+            } else {
+                setScale(1);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -129,8 +149,8 @@ const DraftPreview: React.FC = () => {
         const containerWidthPx = previewRef.current.offsetWidth;
         const mmPerPx = 210 / containerWidthPx;
 
-        const deltaX = deltaXPixels * mmPerPx;
-        const deltaY = deltaYPixels * mmPerPx;
+        const deltaX = (deltaXPixels / scale) * mmPerPx;
+        const deltaY = (deltaYPixels / scale) * mmPerPx;
 
         setLayout(prev => ({
             ...prev,
@@ -349,9 +369,9 @@ const DraftPreview: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8 overflow-x-hidden" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
             {/* Toolbar */}
-            <div className="w-full max-w-4xl flex justify-between items-center mb-6 px-4">
+            <div className="w-full max-w-4xl flex flex-col sm:flex-row justify-between items-center mb-6 px-4 gap-4">
                 <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-gray-900">
                     <ArrowLeft size={20} className="mr-2" /> Back to Edit
                 </button>
@@ -392,70 +412,75 @@ const DraftPreview: React.FC = () => {
 
             {/* A4 Paper Preview Container */}
             <div
-                ref={previewRef}
-                className="bg-gray-200 p-4 rounded shadow-inner"
+                className="relative origin-top transition-transform duration-200"
+                style={{ transform: `scale(${scale})`, width: '210mm' }}
             >
                 <div
-                    id="letter-preview-content"
-                    className="bg-white shadow-2xl w-[210mm] min-h-[297mm] relative mx-auto print:shadow-none print:w-full overflow-hidden pb-20"
+                    ref={previewRef}
+                    className="bg-gray-200 p-4 rounded shadow-inner inline-block"
                 >
-                    {/* Header Image */}
-                    {renderItem('header', business.headerImage ? (
-                        <img src={business.headerImage.startsWith('http') ? business.headerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.headerImage}`} alt="Header" className="w-[210mm] object-contain" />
-                    ) : <div className="p-4 border font-bold text-center w-[210mm]">NO HEADER IMAGE</div>)}
+                    <div
+                        id="letter-preview-content"
+                        className="bg-white shadow-2xl w-[210mm] min-h-[297mm] relative mx-auto print:shadow-none print:w-full overflow-hidden pb-20"
+                    >
+                        {/* Header Image */}
+                        {renderItem('header', business.headerImage ? (
+                            <img src={business.headerImage.startsWith('http') ? business.headerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.headerImage}`} alt="Header" className="w-[210mm] object-contain" />
+                        ) : <div className="p-4 border font-bold text-center w-[210mm]">NO HEADER IMAGE</div>)}
 
-                    {/* Reference */}
-                    {renderItem('ref', <p className="font-semibold text-sm">Ref: {draft.refNo}</p>)}
+                        {/* Reference */}
+                        {renderItem('ref', <p className="font-semibold text-sm">Ref: {draft.refNo}</p>)}
 
-                    {/* Date */}
-                    {renderItem('date', <p className="font-semibold text-sm">Date: {draft.date ? format(new Date(draft.date), 'dd MMMM, yyyy') : ''}</p>)}
+                        {/* Date */}
+                        {renderItem('date', <p className="font-semibold text-sm">Date: {draft.date ? format(new Date(draft.date), 'dd MMMM, yyyy') : ''}</p>)}
 
-                    {/* Recipient */}
-                    {renderItem('recipient', (
-                        <div className="text-sm">
-                            <p className="font-bold">To,</p>
-                            <p className="font-semibold">{recipient?.name}</p>
-                            {recipient?.contactPerson && <p>{recipient.contactPerson}</p>}
-                            <p className="whitespace-pre-line text-gray-700 w-[80mm]">{recipient?.address}</p>
-                        </div>
-                    ))}
+                        {/* Recipient */}
+                        {renderItem('recipient', (
+                            <div className="text-sm">
+                                <p className="font-bold">To,</p>
+                                <p className="font-semibold">{recipient?.name}</p>
+                                {recipient?.contactPerson && <p>{recipient.contactPerson}</p>}
+                                <p className="whitespace-pre-line text-gray-700 w-[80mm]">{recipient?.address}</p>
+                            </div>
+                        ))}
 
-                    {/* Subject */}
-                    {renderItem('subject', <p className="font-bold underline text-sm w-[170mm]">Subject: {draft.subject}</p>)}
+                        {/* Subject */}
+                        {renderItem('subject', <p className="font-bold underline text-sm w-[170mm]">Subject: {draft.subject}</p>)}
 
-                    {/* Content */}
-                    {renderItem('content', (
-                        <div
-                            className="prose max-w-none text-justify leading-relaxed text-sm w-[170mm]"
-                            dangerouslySetInnerHTML={{ __html: draft.content }}
-                        />
-                    ))}
+                        {/* Content */}
+                        {renderItem('content', (
+                            <div
+                                className="prose max-w-none text-justify leading-relaxed text-sm w-[170mm]"
+                                dangerouslySetInnerHTML={{ __html: draft.content }}
+                            />
+                        ))}
 
-                    {/* Signatory Area */}
-                    {renderItem('signatory', (
-                        <div className="text-right">
-                            <p className="font-semibold text-gray-800 text-sm">For {business.name}</p>
-                            <div className="h-20"></div> {/* Space for seal/sign */}
-                            <p className="font-semibold border-t border-gray-400 pt-2 px-4 inline-block text-sm">Authorized Signatory</p>
-                        </div>
-                    ))}
+                        {/* Signatory Area */}
+                        {renderItem('signatory', (
+                            <div className="text-right">
+                                <p className="font-semibold text-gray-800 text-sm">For {business.name}</p>
+                                <div className="h-20"></div> {/* Space for seal/sign */}
+                                <p className="font-semibold border-t border-gray-400 pt-2 px-4 inline-block text-sm">Authorized Signatory</p>
+                            </div>
+                        ))}
 
-                    {/* Seal */}
-                    {draft.includeSeal && business.sealUrl && renderItem('seal', (
-                        <img
-                            src={business.sealUrl?.startsWith('http') ? business.sealUrl : `https://kk01km6g-3000.inc1.devtunnels.ms${business.sealUrl}`}
-                            alt="Seal"
-                            className="h-24 w-24 object-contain opacity-90 rotate-[-10deg]"
-                        />
-                    ))}
+                        {/* Seal */}
+                        {draft.includeSeal && business.sealUrl && renderItem('seal', (
+                            <img
+                                src={business.sealUrl?.startsWith('http') ? business.sealUrl : `https://kk01km6g-3000.inc1.devtunnels.ms${business.sealUrl}`}
+                                alt="Seal"
+                                className="h-24 w-24 object-contain opacity-90 rotate-[-10deg]"
+                            />
+                        ))}
 
-                    {/* Footer Image - Rendered for screen/single page preview, but excluded/handled manually in PDF export */}
-                    {renderItem('footer', business.footerImage ? (
-                        <div data-type="footer">
-                            <img src={business.footerImage.startsWith('http') ? business.footerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.footerImage}`} alt="Footer" className="w-[210mm] object-contain" />
-                        </div>
-                    ) : null)}
+                        {/* Footer Image - Rendered for screen/single page preview, but excluded/handled manually in PDF export */}
+                        {renderItem('footer', business.footerImage ? (
+                            <div data-type="footer">
+                                <img src={business.footerImage.startsWith('http') ? business.footerImage : `https://kk01km6g-3000.inc1.devtunnels.ms${business.footerImage}`} alt="Footer" className="w-[210mm] object-contain" />
+                            </div>
+                        ) : null)}
 
+                    </div>
                 </div>
             </div>
             {isCustomizing && <div className="mt-4 text-gray-500 text-sm">Drag elements to rearrange. Click "Save Layout" when done.</div>}
