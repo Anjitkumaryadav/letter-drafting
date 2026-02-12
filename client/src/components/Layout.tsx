@@ -45,9 +45,11 @@ const Layout: React.FC = () => {
                                     <Link
                                         key={item.path}
                                         to={item.path}
-                                        className={`flex-shrink-0 flex items-center px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${isActive(item.path)
-                                            ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-100'
-                                            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                                        className={`flex-shrink-0 flex items-center px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 
+                                        ${item.path === '/admin/verify' ? 'hidden md:flex' : ''}
+                                        ${isActive(item.path)
+                                                ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-100'
+                                                : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
                                             }`}
                                     >
                                         <item.icon size={16} className={`mr-1.5 sm:mr-2 ${isActive(item.path) ? 'text-primary-600' : 'text-neutral-400'}`} />
@@ -83,6 +85,23 @@ const Layout: React.FC = () => {
                             </button>
                         </div>
                     </div>
+
+                    {/* Admin Link - Mobile Only (Next Line) */}
+                    {user?.admin && (
+                        <div className="md:hidden pb-2 -mt-1 flex">
+                            <Link
+                                key="/admin/verify"
+                                to="/admin/verify"
+                                className={`flex-1 flex items-center justify-center px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 bg-neutral-100 border border-neutral-200 ${isActive('/admin/verify')
+                                    ? 'bg-neutral-900 text-white border-neutral-900'
+                                    : 'text-neutral-600'
+                                    }`}
+                            >
+                                <Users size={14} className="mr-1.5" />
+                                Verify Accounts
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
                 {/* Mobile Menu Overlay */}

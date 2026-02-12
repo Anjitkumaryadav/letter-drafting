@@ -23,7 +23,7 @@ const BusinessList: React.FC = () => {
 
     const fetchBusinesses = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/businesses');
+            const response = await axios.get('https://letter-drafting.onrender.com/businesses');
             setBusinesses(response.data);
         } catch (error) {
             console.error('Error fetching businesses:', error);
@@ -35,7 +35,7 @@ const BusinessList: React.FC = () => {
     const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to delete this business?')) return;
         try {
-            await axios.delete(`http://localhost:3000/businesses/${id}`);
+            await axios.delete(`https://letter-drafting.onrender.com/businesses/${id}`);
             setBusinesses(businesses.filter((b) => b._id !== id));
         } catch (error) {
             console.error('Error deleting business:', error);
@@ -85,7 +85,7 @@ const BusinessList: React.FC = () => {
                             <div key={business._id} className="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-md">
                                 <div className="h-32 bg-gray-100 flex items-center justify-center">
                                     {business.headerImage || business.logoUrl ? (
-                                        <img src={(business.headerImage || business.logoUrl || '').startsWith('http') ? (business.headerImage || business.logoUrl) : `http://localhost:3000${business.headerImage || business.logoUrl}`} alt={business.name} className="object-contain w-full h-full p-4" />
+                                        <img src={(business.headerImage || business.logoUrl || '').startsWith('http') ? (business.headerImage || business.logoUrl) : `https://letter-drafting.onrender.com${business.headerImage || business.logoUrl}`} alt={business.name} className="object-contain w-full h-full p-4" />
                                     ) : (
                                         <Building size={48} className="text-gray-300" />
                                     )}

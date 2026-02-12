@@ -19,7 +19,7 @@ const Register: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            await axios.post('http://localhost:3000/auth/register', { name, phone, email, password });
+            await axios.post('https://letter-drafting.onrender.com/auth/register', { name, phone, email, password });
             alert('Registration successful. Your account is pending approval by admin.');
             navigate('/login');
         } catch (err: any) {
