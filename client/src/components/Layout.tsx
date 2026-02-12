@@ -13,58 +13,71 @@ const Layout: React.FC = () => {
 
     const isActive = (path: string) => location.pathname === path;
 
+    const navItems = [
+        { path: '/', label: 'Letters', icon: FileText },
+        { path: '/businesses', label: 'Businesses', icon: Building2 },
+        { path: '/recipients', label: 'Recipients', icon: Users },
+    ];
+
+    if (user?.admin) {
+        navItems.push({ path: '/admin/verify', label: 'Verify Accounts', icon: Users });
+    }
+
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <nav className="bg-white shadow-sm z-50 sticky top-0">
-                <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-neutral-50 flex flex-col font-sans overflow-x-hidden">
+            {/* Navbar */}
+            <nav className="bg-white/80 backdrop-blur-md border-b border-neutral-200 sticky top-0 z-50">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
-                        <div className="flex items-center space-x-8">
-                            <Link to="/" className="text-xl font-bold text-blue-600">Bharat Business Deals</Link>
-                            <div className="hidden md:flex space-x-4">
-                                <Link
-                                    to="/"
-                                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/') ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
-                                >
-                                    <FileText size={18} className="mr-2" />
-                                    Letters
-                                </Link>
-                                <Link
-                                    to="/businesses"
-                                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/businesses') ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
-                                >
-                                    <Building2 size={18} className="mr-2" />
-                                    Businesses
-                                </Link>
-                                <Link
-                                    to="/recipients"
-                                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/recipients') ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
-                                >
-                                    <Users size={18} className="mr-2" />
-                                    Recipients
-                                </Link>
-                                {user?.admin && (
+                        {/* Logo & Desktop Nav */}
+                        <div className="flex items-center gap-8">
+                            <Link to="/" className="flex items-center gap-2 group">
+                                <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:bg-primary-700 transition-colors">
+                                    B
+                                </div>
+                                <span className="text-lg font-bold text-neutral-900 tracking-tight hidden sm:block">
+                                    Bharat Business
+                                </span>
+                            </Link>
+
+                            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mask-gradient pr-2">
+                                {navItems.map((item) => (
                                     <Link
-                                        to="/admin/verify"
-                                        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/admin/verify') ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
+                                        key={item.path}
+                                        to={item.path}
+                                        className={`flex-shrink-0 flex items-center px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${isActive(item.path)
+                                            ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-100'
+                                            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                                            }`}
                                     >
-                                        <Users size={18} className="mr-2" />
-                                        Verify Accounts
+                                        <item.icon size={16} className={`mr-1.5 sm:mr-2 ${isActive(item.path) ? 'text-primary-600' : 'text-neutral-400'}`} />
+                                        {item.label}
                                     </Link>
-                                )}
+                                ))}
                             </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            <span className="text-gray-700 text-sm hidden md:inline">Welcome, {user?.name}</span>
-                            <button
-                                onClick={logout}
-                                className="hidden md:flex items-center px-3 py-2 text-sm text-red-600 transition rounded hover:bg-red-50"
-                            >
-                                <LogOut size={16} className="mr-1" />
-                                <span>Logout</span>
-                            </button>
+
+                        {/* User Profile & Mobile Actions */}
+                        <div className="flex items-center gap-2 sm:gap-4 ml-auto pl-2">
+                            <div className="hidden md:flex items-center gap-3 pl-4 border-l border-neutral-200">
+                                <div className="flex flex-col items-end">
+                                    <span className="text-sm font-semibold text-neutral-800 leading-none">{user?.name}</span>
+                                    <span className="text-xs text-neutral-500 mt-1">{user?.email}</span>
+                                </div>
+                                <button
+                                    onClick={logout}
+                                    className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Logout"
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </div>
+
+                            {/* Mobile Menu Button - Logout/Profile Only */}
                             <button
                                 onClick={toggleMobileMenu}
-                                className="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                                className="md:hidden p-2 rounded-lg text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200 transition-colors"
+                                aria-label="Menu"
                             >
                                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
@@ -72,67 +85,49 @@ const Layout: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
-                {isMobileMenuOpen && (
-                    <div className="md:hidden bg-white border-t">
-                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                            <Link
-                                to="/"
-                                onClick={closeMobileMenu}
-                                className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${isActive('/') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'}`}
-                            >
-                                <FileText size={18} className="mr-2" />
-                                Letters
-                            </Link>
-                            <Link
-                                to="/businesses"
-                                onClick={closeMobileMenu}
-                                className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${isActive('/businesses') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'}`}
-                            >
-                                <Building2 size={18} className="mr-2" />
-                                Businesses
-                            </Link>
-                            <Link
-                                to="/recipients"
-                                onClick={closeMobileMenu}
-                                className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${isActive('/recipients') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'}`}
-                            >
-                                <Users size={18} className="mr-2" />
-                                Recipients
-                            </Link>
-                            {user?.admin && (
-                                <Link
-                                    to="/admin/verify"
-                                    onClick={closeMobileMenu}
-                                    className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${isActive('/admin/verify') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'}`}
-                                >
-                                    <Users size={18} className="mr-2" />
-                                    Verify Accounts
-                                </Link>
-                            )}
-                        </div>
-                        <div className="pt-4 pb-4 border-t border-gray-200">
-                            <div className="flex items-center px-5">
-                                <div className="ml-3">
-                                    <div className="text-base font-medium leading-none text-gray-800">{user?.name}</div>
-                                    <div className="text-sm font-medium leading-none text-gray-500 mt-1">{user?.email}</div>
-                                </div>
-                            </div>
-                            <div className="mt-3 px-2 space-y-1">
-                                <button
-                                    onClick={() => { closeMobileMenu(); logout(); }}
-                                    className="flex w-full items-center px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
-                                >
-                                    <LogOut size={18} className="mr-2" />
-                                    Logout
-                                </button>
-                            </div>
-                        </div>
+                {/* Mobile Menu Overlay */}
+                <div
+                    className={`md:hidden fixed inset-0 z-40 bg-neutral-900/20 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                        }`}
+                    onClick={closeMobileMenu}
+                />
+
+                {/* Mobile Menu Content - Profile & Logout Only */}
+                <div
+                    className={`md:hidden fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                        }`}
+                >
+                    <div className="p-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
+                        <span className="font-semibold text-neutral-900">Account</span>
+                        <button onClick={closeMobileMenu} className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-lg">
+                            <X size={20} />
+                        </button>
                     </div>
-                )}
+
+                    <div className="p-4">
+                        <div className="flex items-center gap-3 mb-6 bg-neutral-50 p-3 rounded-xl border border-neutral-100">
+                            <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xl border-2 border-white shadow-sm">
+                                {user?.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="overflow-hidden">
+                                <p className="text-sm font-bold text-neutral-900 truncate">{user?.name}</p>
+                                <p className="text-xs text-neutral-500 truncate">{user?.email}</p>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => { closeMobileMenu(); logout(); }}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 transition-all shadow-sm"
+                        >
+                            <LogOut size={18} />
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
             </nav>
 
-            <main className="flex-1">
+            {/* Main Content */}
+            <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
                 <Outlet />
             </main>
         </div>

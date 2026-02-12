@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, Save } from 'lucide-react';
+import { X, Save, Building2, User, MapPin, Mail, Phone } from 'lucide-react';
 
 interface RecipientFormModalProps {
     isOpen: boolean;
@@ -46,9 +46,9 @@ const RecipientFormModal: React.FC<RecipientFormModalProps> = ({ isOpen, onClose
         setLoading(true);
         try {
             if (recipient) {
-                await axios.patch(`https://letter-drafting.onrender.com/recipients/${recipient._id}`, formData);
+                await axios.patch(`http://localhost:3000/recipients/${recipient._id}`, formData);
             } else {
-                await axios.post('https://letter-drafting.onrender.com/recipients', formData);
+                await axios.post('http://localhost:3000/recipients', formData);
             }
             onSuccess();
             onClose();
@@ -61,86 +61,127 @@ const RecipientFormModal: React.FC<RecipientFormModalProps> = ({ isOpen, onClose
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl">
-                <div className="flex items-center justify-between p-4 border-b">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                        {recipient ? 'Edit Recipient' : 'Add Recipient'}
-                    </h2>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <X size={24} />
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-in">
+            <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden scale-100 animate-slide-up">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
+                    <div>
+                        <h2 className="text-xl font-bold text-neutral-900">
+                            {recipient ? 'Edit Recipient' : 'Add New Recipient'}
+                        </h2>
+                        <p className="text-sm text-neutral-500 mt-0.5">Enter recipient details below</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                    >
+                        <X size={20} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Organization / Name</label>
-                        <input
-                            type="text"
-                            required
-                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Contact Person (Optional)</label>
-                        <input
-                            type="text"
-                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-                            value={formData.contactPerson}
-                            onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Address</label>
-                        <textarea
-                            required
-                            rows={3}
-                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-                            value={formData.address}
-                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Email</label>
-                            <input
-                                type="email"
-                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            />
+                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Organization / Name</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Building2 size={18} className="text-neutral-400" />
+                                </div>
+                                <input
+                                    type="text"
+                                    required
+                                    className="block w-full pl-10 pr-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium"
+                                    placeholder="e.g. Acme Corp"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Phone</label>
-                            <input
-                                type="text"
-                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            />
+                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Contact Person <span className="text-neutral-400 font-normal">(Optional)</span></label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <User size={18} className="text-neutral-400" />
+                                </div>
+                                <input
+                                    type="text"
+                                    className="block w-full pl-10 pr-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                                    placeholder="e.g. John Doe"
+                                    value={formData.contactPerson}
+                                    onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Address</label>
+                            <div className="relative">
+                                <div className="absolute top-3 left-3 flex items-start pointer-events-none">
+                                    <MapPin size={18} className="text-neutral-400" />
+                                </div>
+                                <textarea
+                                    required
+                                    rows={3}
+                                    className="block w-full pl-10 pr-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all resize-none"
+                                    placeholder="Enter full address..."
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-700 mb-1.5">Email</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Mail size={18} className="text-neutral-400" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        className="block w-full pl-10 pr-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                                        placeholder="john@example.com"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-700 mb-1.5">Phone</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Phone size={18} className="text-neutral-400" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="block w-full pl-10 pr-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                                        placeholder="+91 98765..."
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex justify-end pt-4">
+                    {/* Footer */}
+                    <div className="flex justify-end gap-3 pt-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 mr-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                            className="px-5 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                            className="flex items-center px-6 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-sm transition-all active:scale-95"
                         >
-                            <Save size={16} className="mr-2" />
-                            {loading ? 'Saving...' : 'Save'}
+                            <Save size={18} className="mr-2" />
+                            {loading ? 'Saving...' : 'Save Recipient'}
                         </button>
                     </div>
                 </form>

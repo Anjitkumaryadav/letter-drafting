@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { Check, X, Phone, Mail, Calendar, User, UserX, PauseCircle, PlayCircle, RefreshCw, Trash2 } from 'lucide-react';
+import { Check, X, Phone, Mail, User, UserX, PauseCircle, PlayCircle, RefreshCw, Trash2, ShieldCheck, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface UserData {
@@ -33,7 +33,7 @@ const AdminVerify: React.FC = () => {
         setError('');
         try {
             const endpoint = activeTab === 'pending' ? 'pending' : activeTab === 'deleted' ? 'deleted' : 'active';
-            const response = await axios.get(`https://letter-drafting.onrender.com/users/${endpoint}`);
+            const response = await axios.get(`http://localhost:3000/users/${endpoint}`);
             setUsers(response.data);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to fetch users');
@@ -56,7 +56,7 @@ const AdminVerify: React.FC = () => {
 
         setActionLoading(id);
         try {
-            let url = `https://letter-drafting.onrender.com/users/${id}`;
+            let url = `http://localhost:3000/users/${id}`;
             let method: 'patch' | 'delete' = 'patch';
 
             switch (action) {
@@ -78,7 +78,7 @@ const AdminVerify: React.FC = () => {
     };
 
     if (!user?.admin) {
-        return <div className="p-8 text-center text-red-600">Access Denied</div>;
+        return <div className="p-8 text-center text-red-600 font-medium bg-red-50 rounded-lg max-w-lg mx-auto mt-20">Access Denied: Admins only.</div>;
     }
 
     const tabs: { id: TabType; label: string; icon: any }[] = [
@@ -88,89 +88,115 @@ const AdminVerify: React.FC = () => {
     ];
 
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <User className="mr-2" /> User Management
-            </h1>
+        <div className="space-y-6">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-2xl font-bold text-neutral-900 flex items-center gap-2">
+                    <ShieldCheck className="text-primary-600" />
+                    User Management
+                </h1>
+                <p className="text-neutral-500 text-sm">Review, approve, and manage user accounts.</p>
+            </div>
 
             {/* Tabs */}
-            <div className="border-b border-gray-200 mb-6">
-                <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`
-                                    whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center
-                                    ${activeTab === tab.id
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
-                                `}
-                            >
-                                <Icon size={16} className="mr-2" />
-                                {tab.label}
-                            </button>
-                        );
-                    })}
-                </nav>
+            <div className="bg-white p-1 rounded-xl shadow-sm border border-neutral-200 flex flex-wrap gap-1">
+                {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`
+                                flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all
+                                ${isActive
+                                    ? 'bg-neutral-900 text-white shadow-sm'
+                                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'}
+                            `}
+                        >
+                            <Icon size={16} />
+                            {tab.label}
+                        </button>
+                    );
+                })}
             </div>
 
             {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-                    <p className="text-sm text-red-700">{error}</p>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 text-red-700">
+                    <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
+                    <p className="text-sm font-medium">{error}</p>
                 </div>
             )}
 
             {loading ? (
-                <div className="p-8 text-center">Loading...</div>
+                <div className="space-y-4 animate-pulse">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-24 bg-neutral-200 rounded-xl" />
+                    ))}
+                </div>
             ) : users.length === 0 ? (
-                <div className="bg-white shadow rounded-lg p-6 text-center text-gray-500">
-                    No users found in this section.
+                <div className="text-center py-16 bg-white rounded-xl border border-dashed border-neutral-300">
+                    <div className="bg-neutral-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <User size={32} className="text-neutral-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-neutral-900">No {activeTab} users found</h3>
+                    <p className="text-neutral-500 mt-1">
+                        {activeTab === 'pending' ? "You're all caught up! No approvals needed." : "No users to display in this list."}
+                    </p>
                 </div>
             ) : (
-                <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <ul className="divide-y divide-gray-200">
+                <div className="bg-white shadow-card rounded-xl border border-neutral-200 overflow-hidden">
+                    <ul className="divide-y divide-neutral-100">
                         {users.map((userData) => (
-                            <li key={userData._id} className="p-4 sm:p-6 hover:bg-gray-50 transition">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <li key={userData._id} className="p-5 hover:bg-neutral-50 transition-colors">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center">
-                                            <h3 className="text-lg font-medium text-gray-900 truncate">{userData.name}</h3>
-                                            {userData.isHeld && <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">On Hold</span>}
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-700 font-bold text-sm">
+                                                {userData.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className="text-sm font-semibold text-neutral-900 truncate">{userData.name}</h3>
+                                                    {userData.isHeld && (
+                                                        <span className="px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                                            On Hold
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-neutral-500 mt-0.5">
+                                                    Joined {format(new Date(userData.createdAt), 'MMM d, yyyy')}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="mt-1 flex flex-col sm:flex-row sm:space-x-4 text-sm text-gray-500">
-                                            <div className="flex items-center mt-1 sm:mt-0">
-                                                <Mail size={16} className="mr-1.5 flex-shrink-0 text-gray-400" />
+
+                                        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-600">
+                                            <div className="flex items-center gap-2">
+                                                <Mail size={14} className="text-neutral-400" />
                                                 <span className="truncate">{userData.email}</span>
                                             </div>
-                                            <div className="flex items-center mt-1 sm:mt-0">
-                                                <Phone size={16} className="mr-1.5 flex-shrink-0 text-gray-400" />
-                                                <a href={`tel:${userData.phone}`} className="hover:text-blue-600">{userData.phone}</a>
-                                            </div>
-                                            <div className="flex items-center mt-1 sm:mt-0">
-                                                <Calendar size={16} className="mr-1.5 flex-shrink-0 text-gray-400" />
-                                                <span>{format(new Date(userData.createdAt), 'PPP p')}</span>
+                                            <div className="flex items-center gap-2">
+                                                <Phone size={14} className="text-neutral-400" />
+                                                <a href={`tel:${userData.phone}`} className="hover:text-primary-600 hover:underline transition-colors">{userData.phone}</a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center space-x-3 mt-2 sm:mt-0 w-full sm:w-auto justify-end">
+
+                                    <div className="flex items-center gap-2 mt-2 sm:mt-0 w-full sm:w-auto self-start sm:self-center">
                                         {activeTab === 'pending' && (
                                             <>
                                                 <button
                                                     onClick={() => handleAction(userData._id, 'approve')}
                                                     disabled={actionLoading === userData._id}
-                                                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                                                    className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
                                                 >
-                                                    <Check size={16} className="mr-1" /> Approve
+                                                    <Check size={14} className="mr-1.5" /> Approve
                                                 </button>
                                                 <button
                                                     onClick={() => handleAction(userData._id, 'reject')}
                                                     disabled={actionLoading === userData._id}
-                                                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                                                    className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 border border-neutral-200 text-xs font-medium rounded-lg text-red-600 bg-white hover:bg-red-50 disabled:opacity-50 transition-colors"
                                                 >
-                                                    <X size={16} className="mr-1" /> Reject
+                                                    <X size={14} className="mr-1.5" /> Reject
                                                 </button>
                                             </>
                                         )}
@@ -181,25 +207,25 @@ const AdminVerify: React.FC = () => {
                                                     <button
                                                         onClick={() => handleAction(userData._id, 'unhold')}
                                                         disabled={actionLoading === userData._id}
-                                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                                                        className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 border border-primary-200 text-xs font-medium rounded-lg text-primary-700 bg-primary-50 hover:bg-primary-100 disabled:opacity-50 transition-colors"
                                                     >
-                                                        <PlayCircle size={16} className="mr-1" /> Activate
+                                                        <PlayCircle size={14} className="mr-1.5" /> Activate
                                                     </button>
                                                 ) : (
                                                     <button
                                                         onClick={() => handleAction(userData._id, 'hold')}
                                                         disabled={actionLoading === userData._id}
-                                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
+                                                        className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 border border-neutral-200 text-xs font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 disabled:opacity-50 transition-colors"
                                                     >
-                                                        <PauseCircle size={16} className="mr-1" /> Hold
+                                                        <PauseCircle size={14} className="mr-1.5" /> Hold
                                                     </button>
                                                 )}
                                                 <button
                                                     onClick={() => handleAction(userData._id, 'softDelete')}
                                                     disabled={actionLoading === userData._id}
-                                                    className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                                                    className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 border border-neutral-200 text-xs font-medium rounded-lg text-red-600 bg-white hover:bg-red-50 disabled:opacity-50 transition-colors"
                                                 >
-                                                    <Trash2 size={16} className="mr-1" /> Delete
+                                                    <Trash2 size={14} className="mr-1.5" /> Delete
                                                 </button>
                                             </>
                                         )}
@@ -208,9 +234,9 @@ const AdminVerify: React.FC = () => {
                                             <button
                                                 onClick={() => handleAction(userData._id, 'restore')}
                                                 disabled={actionLoading === userData._id}
-                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                                                className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
                                             >
-                                                <RefreshCw size={16} className="mr-1" /> Restore
+                                                <RefreshCw size={14} className="mr-1.5" /> Restore
                                             </button>
                                         )}
                                     </div>
