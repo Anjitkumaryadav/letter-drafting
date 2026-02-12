@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
-import { Edit2, Copy, Trash2, FileDown, FileText, Search, Plus } from 'lucide-react';
+import { Copy, Trash2, FileDown, FileText, Search, Plus, CheckCircle2, History } from 'lucide-react';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 // @ts-ignore
@@ -44,7 +44,9 @@ const DraftList: React.FC = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
         if (!window.confirm('Are you sure you want to delete this draft?')) return;
         try {
             await axios.delete(`https://letter-drafting.onrender.com/drafts/${id}`);
@@ -55,18 +57,16 @@ const DraftList: React.FC = () => {
         }
     };
 
-    const handleClone = async (draft: Draft) => {
+    const handleClone = async (draft: Draft, e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
         if (!window.confirm(`Create a copy of "${draft.subject}"?`)) return;
         try {
             const { _id, updatedAt, ...cloneData } = draft;
-            // Need to extract IDs from populated objects if present, or backend handles it?
-            // Usually populated objects need to be flattened to IDs for creation if the CreateDTO expects IDs.
-            // Let's assume standard behavior: we need to send IDs.
             const payload = {
                 ...cloneData,
                 subject: `${draft.subject} (Copy)`,
                 status: 'DRAFT',
-                // Flatten populated fields if necessary (depends on backend structure, assuming backend returns populated objects)
                 businessId: (draft.businessId as any)?._id || draft.businessId,
                 recipientId: (draft.recipientId as any)?._id || draft.recipientId,
             };
@@ -130,14 +130,11 @@ const DraftList: React.FC = () => {
         return div;
     };
 
-    const handleDownloadPDF = async (draft: Draft) => {
-        // We need full details (business/recipient populated) to print.
-        // The list might contain populated data. 
-        // If not, we might need to fetch single draft. 
-        // Assuming list returns populated data for simplicity based on DraftsService.findAll
-
+    const handleDownloadPDF = async (draft: Draft, e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
         const element = generateHiddenElement(draft);
-        document.body.appendChild(element); // Append to body to render images? html2pdf needs it in DOM sometimes.
+        document.body.appendChild(element);
 
         try {
             const opt = {
@@ -157,7 +154,9 @@ const DraftList: React.FC = () => {
         }
     };
 
-    const handleDownloadDOC = async (draft: Draft) => {
+    const handleDownloadDOC = async (draft: Draft, e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
         const element = generateHiddenElement(draft);
 
         const htmlContent = `
@@ -185,132 +184,167 @@ const DraftList: React.FC = () => {
         return matchesSearch && matchesStatus;
     });
 
-    if (loading) return <div className="p-8 text-center">Loading inbox...</div>;
-
     return (
-        <div className="max-w-6xl mx-auto p-4 sm:p-8">
-            <div className="flex justify-between items-center mb-8">
+        <div className="space-y-6">
+            {/* Header & Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Letter Inbox</h1>
-                    <p className="text-gray-500 text-sm">Manage your correspondence</p>
+                    <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Drafts</h1>
+                    <p className="text-neutral-500 text-sm mt-1">Manage and create letters</p>
                 </div>
-                <Link to="/drafts/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center shadow-sm">
-                    <Plus size={18} className="mr-2" /> New Letter
+                <Link to="/drafts/new" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-all shadow-sm font-medium">
+                    <Plus size={20} />
+                    New Letter
                 </Link>
             </div>
 
-            {/* Filters */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="relative w-full md:w-96">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Search by subject or recipient..."
-                        className="pl-10 pr-4 py-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div className="flex space-x-2 w-full md:w-auto">
+            {/* Filters & Search - Mobile Responsive */}
+            <div className="bg-white p-1 rounded-xl shadow-sm border border-neutral-200 flex flex-col sm:flex-row gap-2">
+                <div className="flex p-1 gap-1 bg-neutral-100 rounded-lg sm:w-auto w-full">
                     <button
                         onClick={() => setStatusFilter('ALL')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium ${statusFilter === 'ALL' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'ALL' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-900'}`}
                     >
                         All
                     </button>
                     <button
                         onClick={() => setStatusFilter('DRAFT')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium ${statusFilter === 'DRAFT' ? 'bg-yellow-100 text-yellow-800 border-yellow-200 border' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'DRAFT' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-900'}`}
                     >
                         Drafts
                     </button>
                     <button
                         onClick={() => setStatusFilter('FINAL')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium ${statusFilter === 'FINAL' ? 'bg-green-100 text-green-800 border-green-200 border' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'FINAL' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-900'}`}
                     >
                         Final
                     </button>
                 </div>
+
+                <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search size={16} className="text-neutral-400" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search drafts..."
+                        className="pl-9 pr-4 py-2 w-full border-0 bg-transparent focus:ring-0 text-sm font-medium placeholder-neutral-400"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                    />
+                </div>
             </div>
 
-            {/* List */}
-            <div className="bg-white rounded-lg shadow overflow-hidden border">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-gray-50 border-b">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider w-24">Status</th>
-                            <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Subject</th>
-                            <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Recipient</th>
-                            <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider hidden md:table-cell">Business</th>
-                            <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider w-32">Date</th>
-                            <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider w-48 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {filteredDrafts.length > 0 ? filteredDrafts.map((draft) => (
-                            <tr key={draft._id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${draft.status === 'FINAL' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                        }`}>
-                                        {draft.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 font-medium text-gray-900">
-                                    <Link to={draft.status === 'FINAL' ? `/drafts/${draft._id}/preview` : `/drafts/${draft._id}`} className="hover:text-blue-600 hover:underline block truncate max-w-xs">
-                                        {draft.subject || '(No Subject)'}
-                                    </Link>
-                                </td>
-                                <td className="px-6 py-4 text-gray-600">{draft.recipientId?.name || '-'}</td>
-                                <td className="px-6 py-4 text-gray-600 hidden md:table-cell">{draft.businessId?.name || '-'}</td>
-                                <td className="px-6 py-4 text-gray-500 text-sm">{format(new Date(draft.updatedAt), 'MMM dd, yyyy')}</td>
-                                <td className="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                                    <button
-                                        onClick={() => handleClone(draft)}
-                                        title="Clone as Template"
-                                        className="text-gray-400 hover:text-blue-600 transition-colors p-1"
-                                    >
-                                        <Copy size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDownloadPDF(draft)}
-                                        title="Download PDF"
-                                        className="text-gray-400 hover:text-red-600 transition-colors p-1"
-                                    >
-                                        <FileDown size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDownloadDOC(draft)}
-                                        title="Download Word Doc"
-                                        className="text-gray-400 hover:text-blue-800 transition-colors p-1"
-                                    >
-                                        <FileText size={16} />
-                                    </button>
-                                    <button
+            {/* Content Area */}
+            {loading ? (
+                <div className="space-y-4 animate-pulse">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-24 bg-neutral-200 rounded-xl" />
+                    ))}
+                </div>
+            ) : filteredDrafts.length === 0 ? (
+                <div className="text-center py-16 bg-white rounded-xl border border-dashed border-neutral-300">
+                    <div className="bg-neutral-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileText size={32} className="text-neutral-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-neutral-900">No drafts found</h3>
+                    <p className="text-neutral-500 mt-1 max-w-sm mx-auto">
+                        {searchTerm ? "Try adjusting your search terms." : "Start by creating your first letter draft."}
+                    </p>
+                    {!searchTerm && (
+                        <Link to="/drafts/new" className="mt-4 inline-block px-4 py-2 text-sm text-primary-600 font-medium hover:bg-primary-50 rounded-lg transition-colors">
+                            Create New Draft
+                        </Link>
+                    )}
+                </div>
+            ) : (
+                <div className="bg-white rounded-xl shadow-card border border-neutral-200 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-neutral-50 border-b border-neutral-200">
+                                <tr>
+                                    <th className="px-6 py-4 font-semibold text-neutral-600 text-xs uppercase tracking-wider w-32">Status</th>
+                                    <th className="px-6 py-4 font-semibold text-neutral-600 text-xs uppercase tracking-wider">Subject</th>
+                                    <th className="px-6 py-4 font-semibold text-neutral-600 text-xs uppercase tracking-wider hidden md:table-cell">Recipient</th>
+                                    <th className="px-6 py-4 font-semibold text-neutral-600 text-xs uppercase tracking-wider hidden lg:table-cell">Business</th>
+                                    <th className="px-6 py-4 font-semibold text-neutral-600 text-xs uppercase tracking-wider w-40">Last Updated</th>
+                                    <th className="px-6 py-4 font-semibold text-neutral-600 text-xs uppercase tracking-wider w-40 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-100">
+                                {filteredDrafts.map((draft) => (
+                                    <tr
+                                        key={draft._id}
+                                        className="hover:bg-neutral-50 transition-colors cursor-pointer group"
                                         onClick={() => navigate(draft.status === 'FINAL' ? `/drafts/${draft._id}/preview` : `/drafts/${draft._id}`)}
-                                        title="Edit/View"
-                                        className="text-gray-400 hover:text-green-600 transition-colors p-1"
                                     >
-                                        <Edit2 size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(draft._id)}
-                                        title="Delete"
-                                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </td>
-                            </tr>
-                        )) : (
-                            <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                    No letters found. <Link to="/drafts/new" className="text-blue-600 hover:underline">Draft a new one!</Link>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {draft.status === 'FINAL' ? (
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
+                                                    <CheckCircle2 size={12} /> Final
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 border border-neutral-200">
+                                                    <History size={12} /> Draft
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-neutral-900 truncate max-w-xs group-hover:text-primary-600 transition-colors">
+                                                {draft.subject || <span className="text-neutral-400 italic">Untitled Draft</span>}
+                                            </div>
+                                            <div className="md:hidden text-xs text-neutral-500 mt-1">
+                                                {draft.recipientId?.name}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-600 hidden md:table-cell">
+                                            {draft.recipientId?.name || <span className="text-neutral-300">-</span>}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-600 hidden lg:table-cell">
+                                            {draft.businessId?.name || <span className="text-neutral-300">-</span>}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-500">
+                                            {format(new Date(draft.updatedAt), 'MMM dd, yyyy')}
+                                        </td>
+                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={(e) => handleClone(draft, e)}
+                                                    className="p-1.5 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                                    title="Clone"
+                                                >
+                                                    <Copy size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDownloadPDF(draft, e)}
+                                                    className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Download PDF"
+                                                >
+                                                    <FileDown size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDownloadDOC(draft, e)}
+                                                    className="p-1.5 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    title="Download Word Doc"
+                                                >
+                                                    <FileText size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDelete(draft._id, e)}
+                                                    className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

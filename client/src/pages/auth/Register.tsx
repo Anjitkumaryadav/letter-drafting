@@ -30,7 +30,8 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-screen 
+           bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
             <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
                 <h2 className="mb-6 text-3xl font-bold text-center text-gray-800">Register</h2>
                 {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded">{error}</div>}
@@ -99,7 +100,7 @@ const Register: React.FC = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full py-2 font-bold text-white transition bg-green-600 rounded hover:bg-green-700 disabled:opacity-50"
+                        className="w-full py-2 font-bold text-white transition bg-primary-600 rounded hover:bg-primary-700 disabled:opacity-50"
                         disabled={loading}
                     >
                         {loading ? 'Registering...' : 'Register'}
