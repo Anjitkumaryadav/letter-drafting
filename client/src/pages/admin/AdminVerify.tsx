@@ -43,13 +43,13 @@ const AdminVerify: React.FC = () => {
         setError('');
         try {
             if (activeTab === 'queries') {
-                const response = await axios.get('http://localhost:3000/contacts', {
+                const response = await axios.get('https://letter-drafting.onrender.com/contacts', {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } // Ensure auth header if needed, though axios interceptor might handle it. Adding explicitly to be safe as controller is guarded.
                 });
                 setContacts(response.data);
             } else {
                 const endpoint = activeTab === 'pending' ? 'pending' : activeTab === 'deleted' ? 'deleted' : 'active';
-                const response = await axios.get(`http://localhost:3000/users/${endpoint}`);
+                const response = await axios.get(`https://letter-drafting.onrender.com/users/${endpoint}`);
                 setUsers(response.data);
             }
         } catch (err: any) {
@@ -73,7 +73,7 @@ const AdminVerify: React.FC = () => {
 
         setActionLoading(id);
         try {
-            let url = `http://localhost:3000/users/${id}`;
+            let url = `https://letter-drafting.onrender.com/users/${id}`;
             let method: 'patch' | 'delete' = 'patch';
 
             switch (action) {

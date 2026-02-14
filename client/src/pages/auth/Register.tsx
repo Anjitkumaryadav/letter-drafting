@@ -19,7 +19,7 @@ const Register: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            await axios.post('http://localhost:3000/auth/register', { name, phone, email, password });
+            await axios.post('https://letter-drafting.onrender.com/auth/register', { name, phone, email, password });
             setShowModal(true);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');

@@ -17,7 +17,7 @@ const Login: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await axios.post('http://localhost:3000/auth/login', { email, password });
+            const response = await axios.post('https://letter-drafting.onrender.com/auth/login', { email, password });
             login(response.data.access_token, response.data.user);
             navigate('/letter-draft');
         } catch (err: any) {
