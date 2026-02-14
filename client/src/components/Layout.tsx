@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Building2, Users, FileText, Menu, X } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import Footer from './Footer';
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
@@ -14,13 +15,18 @@ const Layout: React.FC = () => {
     const isActive = (path: string) => location.pathname === path;
 
     const navItems = [
-        { path: '/', label: 'Letters', icon: FileText },
+        { path: '/letter-draft', label: 'Letters', icon: FileText },
         { path: '/businesses', label: 'Businesses', icon: Building2 },
         { path: '/recipients', label: 'Recipients', icon: Users },
     ];
 
+    //   const navItems = [
+    //     { path: '/letter-draft', label: 'Letters'},
+    //     { path: '/businesses', label: 'Businesses'},
+    //     { path: '/recipients', label: 'Recipients' },
+    // ];
     if (user?.admin) {
-        navItems.push({ path: '/admin/verify', label: 'Verify Accounts', icon: Users });
+        navItems.push({ path: '/admin/verify', label: 'User Management', icon: Users });
     }
 
     return (
@@ -30,22 +36,17 @@ const Layout: React.FC = () => {
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         {/* Logo & Desktop Nav */}
-                        <div className="flex items-center gap-8">
-                            <Link to="/" className="flex items-center gap-2 group">
-                                <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:bg-primary-700 transition-colors">
-                                    B
-                                </div>
-                                <span className="text-lg font-bold text-neutral-900 tracking-tight hidden sm:block">
-                                    Bharat Business
-                                </span>
+                        <div className="flex items-center gap-2">
+                            <Link to="/letter-draft" className="flex items-center gap-2 group">
+                                <span className="text-xl font-extrabold tracking-tight text-blue-700"><img className="w-12 h-10" src="./src/assets/logo.png" alt="" /></span>
                             </Link>
 
-                            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mask-gradient pr-2">
+                            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mask-gradient pr-1">
                                 {navItems.map((item) => (
                                     <Link
                                         key={item.path}
                                         to={item.path}
-                                        className={`flex-shrink-0 flex items-center px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 
+                                        className={`flex-shrink-0 flex items-center px-2 sm:px-2 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200  
                                         ${item.path === '/admin/verify' ? 'hidden md:flex' : ''}
                                         ${isActive(item.path)
                                                 ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-100'
@@ -118,7 +119,7 @@ const Layout: React.FC = () => {
                 >
                     <div className="p-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
                         <span className="font-semibold text-neutral-900">Account</span>
-                        <button onClick={closeMobileMenu} className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-lg">
+                        <button onClick={closeMobileMenu} className="p- text-neutral-500 hover:bg-neutral-100 rounded-lg">
                             <X size={20} />
                         </button>
                     </div>
@@ -149,6 +150,7 @@ const Layout: React.FC = () => {
             <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
                 <Outlet />
             </main>
+            <Footer />
         </div>
     );
 };

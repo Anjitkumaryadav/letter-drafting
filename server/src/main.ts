@@ -18,8 +18,8 @@ async function bootstrap() {
 
   // Swagger Configuration
   const config = new DocumentBuilder()
-    .setTitle('Bharat Business Deals API')
-    .setDescription('The Bharat Business Deals API description')
+    .setTitle('Quick Letters API')
+    .setDescription('Quick Letters API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

@@ -188,10 +188,10 @@ const DraftList: React.FC = () => {
         <div className="space-y-6">
             {/* Header & Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
+                {/* <div>
                     <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Drafts</h1>
                     <p className="text-neutral-500 text-sm mt-1">Manage and create letters</p>
-                </div>
+                </div> */}
                 <Link to="/drafts/new" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-all shadow-sm font-medium">
                     <Plus size={20} />
                     New Letter

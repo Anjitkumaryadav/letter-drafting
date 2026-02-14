@@ -19,7 +19,7 @@ const Login: React.FC = () => {
         try {
             const response = await axios.post('https://letter-drafting.onrender.com/auth/login', { email, password });
             login(response.data.access_token, response.data.user);
-            navigate('/');
+            navigate('/letter-draft');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         } finally {
@@ -74,6 +74,9 @@ const Login: React.FC = () => {
                 </form>
                 <p className="mt-4 text-sm text-center text-gray-600">
                     Don't have an account? <Link to="/register" className="text-blue-500 hover:underline">Register</Link>
+                </p>
+                <p className="mt-4 text-sm text-center text-gray-600">
+                    Back to home page? <Link to="/" className="text-blue-500 hover:underline">Home</Link>
                 </p>
             </div>
         </div>

@@ -12,6 +12,7 @@ import { DraftsModule } from './drafts/drafts.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { join } from 'path';
     RecipientsModule,
     DraftsModule,
     CloudinaryModule,
+    ContactsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
