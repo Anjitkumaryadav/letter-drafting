@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { LogOut, Building2, Users, FileText, Menu, X } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import Footer from './Footer';
+import logo from '../assets/logo.png';
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
@@ -38,7 +39,7 @@ const Layout: React.FC = () => {
                         {/* Logo & Desktop Nav */}
                         <div className="flex items-center gap-2">
                             <Link to="/letter-draft" className="flex items-center gap-2 group">
-                                <span className="text-xl font-extrabold tracking-tight text-blue-700"><img className="w-12 h-10" src="./src/assets/logo.png" alt="" /></span>
+                                <span className="text-xl font-extrabold tracking-tight text-blue-700"><img className="w-12 h-10" src={logo} alt="logo" /></span>
                             </Link>
 
                             <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mask-gradient pr-1">
