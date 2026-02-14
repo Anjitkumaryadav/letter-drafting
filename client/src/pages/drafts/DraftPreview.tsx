@@ -109,7 +109,7 @@ const DraftPreview: React.FC = () => {
     useEffect(() => {
         const fetchDraft = async () => {
             try {
-                const response = await axios.get(`https://letter-drafting.onrender.com/drafts/${id}`);
+                const response = await axios.get(`http://localhost:3000/drafts/${id}`);
                 setDraft(response.data);
                 if (response.data.layout) {
                     setLayout(response.data.layout);
@@ -181,7 +181,7 @@ const DraftPreview: React.FC = () => {
     const handleSaveLayout = async () => {
         if (!draft) return;
         try {
-            await axios.patch(`https://letter-drafting.onrender.com/drafts/${id}`, { layout });
+            await axios.patch(`http://localhost:3000/drafts/${id}`, { layout });
             setIsCustomizing(false);
             alert('Layout saved!');
             setDraft({ ...draft, layout });
@@ -222,7 +222,7 @@ const DraftPreview: React.FC = () => {
         // Actually, our renderItem puts footer in normal flow absolute pos. 
         // If we want it on every page, we should remove it from DOM and add via jsPDF
         const footerImg = business?.footerImage
-            ? (business.footerImage.startsWith('http') ? business.footerImage : `https://letter-drafting.onrender.com${business.footerImage}`)
+            ? (business.footerImage.startsWith('http') ? business.footerImage : `http://localhost:3000${business.footerImage}`)
             : null;
 
         // Hide footer in the clone so it doesn't appear only on last page
@@ -303,7 +303,7 @@ const DraftPreview: React.FC = () => {
         if (!draft || !window.confirm('Are you sure you want to finalize this letter? This will lock the draft.')) return;
 
         try {
-            await axios.patch(`https://letter-drafting.onrender.com/drafts/${id}`, { status: 'FINAL' });
+            await axios.patch(`http://localhost:3000/drafts/${id}`, { status: 'FINAL' });
             alert('Letter finalized successfully!');
             navigate('/');
         } catch (error) {
@@ -425,7 +425,7 @@ const DraftPreview: React.FC = () => {
                     >
                         {/* Header Image */}
                         {renderItem('header', business.headerImage ? (
-                            <img src={business.headerImage.startsWith('http') ? business.headerImage : `https://letter-drafting.onrender.com${business.headerImage}`} alt="Header" className="w-[210mm] object-contain" />
+                            <img src={business.headerImage.startsWith('http') ? business.headerImage : `http://localhost:3000${business.headerImage}`} alt="Header" className="w-[210mm] object-contain" />
                         ) : <div className="p-4 border font-bold text-center w-[210mm]">NO HEADER IMAGE</div>)}
 
                         {/* Reference */}
@@ -467,7 +467,7 @@ const DraftPreview: React.FC = () => {
                         {/* Seal */}
                         {draft.includeSeal && business.sealUrl && renderItem('seal', (
                             <img
-                                src={business.sealUrl?.startsWith('http') ? business.sealUrl : `https://letter-drafting.onrender.com${business.sealUrl}`}
+                                src={business.sealUrl?.startsWith('http') ? business.sealUrl : `http://localhost:3000${business.sealUrl}`}
                                 alt="Seal"
                                 className="h-24 w-24 object-contain opacity-90 rotate-[-10deg]"
                             />
@@ -476,7 +476,7 @@ const DraftPreview: React.FC = () => {
                         {/* Footer Image - Rendered for screen/single page preview, but excluded/handled manually in PDF export */}
                         {renderItem('footer', business.footerImage ? (
                             <div data-type="footer">
-                                <img src={business.footerImage.startsWith('http') ? business.footerImage : `https://letter-drafting.onrender.com${business.footerImage}`} alt="Footer" className="w-[210mm] object-contain" />
+                                <img src={business.footerImage.startsWith('http') ? business.footerImage : `http://localhost:3000${business.footerImage}`} alt="Footer" className="w-[210mm] object-contain" />
                             </div>
                         ) : null)}
 

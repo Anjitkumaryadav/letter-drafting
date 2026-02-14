@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-// import { useAuth } from '../../context/AuthContext'; // Unused
-import { Lock, Mail, User } from 'lucide-react';
+import { Lock, Mail, User, X } from 'lucide-react';
+import qrCode from '../../assets/qr.jpg';
 
 const Register: React.FC = () => {
     const [name, setName] = useState('');
@@ -11,7 +11,7 @@ const Register: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    // const { login } = useAuth(); // Unused
+    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -19,9 +19,8 @@ const Register: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            await axios.post('https://letter-drafting.onrender.com/auth/register', { name, phone, email, password });
-            alert('Registration successful. Your account is pending approval by admin.');
-            navigate('/login');
+            await axios.post('http://localhost:3000/auth/register', { name, phone, email, password });
+            setShowModal(true);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
         } finally {
@@ -29,9 +28,13 @@ const Register: React.FC = () => {
         }
     };
 
+    const handleClose = () => {
+        setShowModal(false);
+        navigate('/login');
+    };
+
     return (
-        <div className="flex items-center justify-center min-h-screen 
-           bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
             <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
                 <h2 className="mb-6 text-3xl font-bold text-center text-gray-800">Register</h2>
                 {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded">{error}</div>}
@@ -109,8 +112,68 @@ const Register: React.FC = () => {
                 <p className="mt-4 text-sm text-center text-gray-600">
                     Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
                 </p>
-            </div >
-        </div >
+                <p className="mt-4 text-sm text-center text-gray-600">
+                    Back to home page? <Link to="/" className="text-blue-500 hover:underline">Home</Link>
+                </p>
+            </div>
+
+            {/* QR Code Modal */}
+            {showModal && (
+                <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div
+                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                            aria-hidden="true"
+                            onClick={handleClose}
+                        ></div>
+
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                            <div className="absolute top-0 right-0 pt-4 pr-4">
+                                <button
+                                    type="button"
+                                    className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+                                    onClick={handleClose}
+                                >
+                                    <span className="sr-only">Close</span>
+                                    <X className="h-6 w-6" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div>
+                                <div className="mt-3 text-center sm:mt-5">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                        Scan to Pay
+                                    </h3>
+                                    <div className="mt-4">
+                                        <img
+                                            src={qrCode}
+                                            alt="Payment QR Code"
+                                            className="mx-auto h-64 w-64 object-contain border border-gray-200 rounded-lg"
+                                        />
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            Registration Successful! <br />
+                                            Scan this QR code with any UPI app to pay ₹500.
+                                            <br />
+                                            <span className="text-xs text-gray-400">Your account will be approved after payment verification.</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-5 sm:mt-6">
+                                <button
+                                    type="button"
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:text-sm"
+                                    onClick={handleClose}
+                                >
+                                    Done
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

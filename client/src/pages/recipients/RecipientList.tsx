@@ -26,7 +26,7 @@ const RecipientList: React.FC = () => {
 
     const fetchRecipients = async () => {
         try {
-            const response = await axios.get('https://letter-drafting.onrender.com/recipients');
+            const response = await axios.get('http://localhost:3000/recipients');
             setRecipients(response.data);
         } catch (error) {
             console.error('Error fetching recipients:', error);
@@ -38,7 +38,7 @@ const RecipientList: React.FC = () => {
     const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to delete this recipient?')) return;
         try {
-            await axios.delete(`https://letter-drafting.onrender.com/recipients/${id}`);
+            await axios.delete(`http://localhost:3000/recipients/${id}`);
             setRecipients(recipients.filter((r) => r._id !== id));
         } catch (error) {
             console.error('Error deleting recipient:', error);

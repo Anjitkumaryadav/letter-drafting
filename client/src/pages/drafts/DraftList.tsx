@@ -35,7 +35,7 @@ const DraftList: React.FC = () => {
 
     const fetchDrafts = async () => {
         try {
-            const response = await axios.get('https://letter-drafting.onrender.com/drafts');
+            const response = await axios.get('http://localhost:3000/drafts');
             setDrafts(response.data);
         } catch (error) {
             console.error('Error fetching drafts:', error);
@@ -49,7 +49,7 @@ const DraftList: React.FC = () => {
         e.preventDefault();
         if (!window.confirm('Are you sure you want to delete this draft?')) return;
         try {
-            await axios.delete(`https://letter-drafting.onrender.com/drafts/${id}`);
+            await axios.delete(`http://localhost:3000/drafts/${id}`);
             setDrafts(drafts.filter(d => d._id !== id));
         } catch (error) {
             console.error('Error deleting draft:', error);
@@ -71,7 +71,7 @@ const DraftList: React.FC = () => {
                 recipientId: (draft.recipientId as any)?._id || draft.recipientId,
             };
 
-            const response = await axios.post('https://letter-drafting.onrender.com/drafts', payload);
+            const response = await axios.post('http://localhost:3000/drafts', payload);
             navigate(`/drafts/${response.data._id}`);
         } catch (error) {
             console.error('Error cloning draft:', error);
@@ -94,7 +94,7 @@ const DraftList: React.FC = () => {
         div.innerHTML = `
             <div style="font-family: 'Times New Roman', serif; color: black;">
                 <div style="border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; text-align: center;">
-                    ${business.logo ? `<img src="https://letter-drafting.onrender.com${business.logo}" style="height: 80px; margin-bottom: 10px;" crossOrigin="anonymous"/>` : ''}
+                    ${business.logo ? `<img src="http://localhost:3000${business.logo}" style="height: 80px; margin-bottom: 10px;" crossOrigin="anonymous"/>` : ''}
                     <h1 style="font-size: 24px; font-weight: bold; text-transform: uppercase; margin: 0;">${business.name || ''}</h1>
                     <p style="font-size: 12px; margin: 5px 0;">${business.address || ''}</p>
                 </div>
@@ -121,7 +121,7 @@ const DraftList: React.FC = () => {
                 <div style="text-align: right;">
                     <p style="font-weight: bold;">For ${business.name || ''}</p>
                     <div style="height: 100px; display: flex; justify-content: flex-end; align-items: center; margin: 10px 0;">
-                         ${draft.includeSeal && business.seal ? `<img src="https://letter-drafting.onrender.com${business.seal}" style="height: 80px; opacity: 0.8; transform: rotate(-10deg);" crossOrigin="anonymous"/>` : '<div style="height: 80px;"></div>'}
+                         ${draft.includeSeal && business.seal ? `<img src="http://localhost:3000${business.seal}" style="height: 80px; opacity: 0.8; transform: rotate(-10deg);" crossOrigin="anonymous"/>` : '<div style="height: 80px;"></div>'}
                     </div>
                     <p style="border-top: 1px solid #ccc; display: inline-block; padding-top: 5px;">Authorized Signatory</p>
                 </div>
@@ -188,10 +188,10 @@ const DraftList: React.FC = () => {
         <div className="space-y-6">
             {/* Header & Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
+                {/* <div>
                     <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Drafts</h1>
                     <p className="text-neutral-500 text-sm mt-1">Manage and create letters</p>
-                </div>
+                </div> */}
                 <Link to="/drafts/new" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-all shadow-sm font-medium">
                     <Plus size={20} />
                     New Letter

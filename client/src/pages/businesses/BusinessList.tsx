@@ -23,7 +23,7 @@ const BusinessList: React.FC = () => {
 
     const fetchBusinesses = async () => {
         try {
-            const response = await axios.get('https://letter-drafting.onrender.com/businesses');
+            const response = await axios.get('http://localhost:3000/businesses');
             setBusinesses(response.data);
         } catch (error) {
             console.error('Error fetching businesses:', error);
@@ -35,7 +35,7 @@ const BusinessList: React.FC = () => {
     const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to delete this business?')) return;
         try {
-            await axios.delete(`https://letter-drafting.onrender.com/businesses/${id}`);
+            await axios.delete(`http://localhost:3000/businesses/${id}`);
             setBusinesses(businesses.filter((b) => b._id !== id));
         } catch (error) {
             console.error('Error deleting business:', error);
@@ -51,7 +51,7 @@ const BusinessList: React.FC = () => {
                 <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
-                            <Link to="/" className="text-xl font-bold text-blue-600">Bharat Business</Link>
+                            <Link to="/" className="text-xl font-bold text-blue-600">Quick Letters</Link>
                             <div className="ml-10 flex items-baseline space-x-4">
                                 <Link to="/" className="text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Businesses</Link>
                                 <Link to="/recipients" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Recipients</Link>
@@ -85,7 +85,7 @@ const BusinessList: React.FC = () => {
                             <div key={business._id} className="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-md">
                                 <div className="h-32 bg-gray-100 flex items-center justify-center">
                                     {business.headerImage || business.logoUrl ? (
-                                        <img src={(business.headerImage || business.logoUrl || '').startsWith('http') ? (business.headerImage || business.logoUrl) : `https://letter-drafting.onrender.com${business.headerImage || business.logoUrl}`} alt={business.name} className="object-contain w-full h-full p-4" />
+                                        <img src={(business.headerImage || business.logoUrl || '').startsWith('http') ? (business.headerImage || business.logoUrl) : `http://localhost:3000${business.headerImage || business.logoUrl}`} alt={business.name} className="object-contain w-full h-full p-4" />
                                     ) : (
                                         <Building size={48} className="text-gray-300" />
                                     )}
