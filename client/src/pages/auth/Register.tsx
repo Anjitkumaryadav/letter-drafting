@@ -9,170 +9,197 @@ const Register: React.FC = () => {
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null);
     const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setPaymentScreenshot(e.target.files[0]);
+        }
+    };
+
+    const uploadScreenshot = async (file: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axios.post('http://localhost:3000/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data.url;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setSuccessMessage('');
+
+        if (!paymentScreenshot) {
+            setError('Please upload a payment screenshot.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            await axios.post('https://letter-drafting.onrender.com/auth/register', { name, phone, email, password });
-            setShowModal(true);
+            // 1. Upload Screenshot
+            const screenshotUrl = await uploadScreenshot(paymentScreenshot);
+
+            // 2. Register User
+            await axios.post('http://localhost:3000/auth/register', {
+                name,
+                phone,
+                email,
+                password,
+                paymentScreenshot: screenshotUrl,
+            });
+
+            setSuccessMessage('Registration successful! Please wait for admin approval.');
+            setTimeout(() => {
+                navigate('/login');
+            }, 3000);
+
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed');
+            console.error(err);
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleClose = () => {
-        setShowModal(false);
-        navigate('/login');
-    };
-
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 py-12 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
                 <h2 className="mb-6 text-3xl font-bold text-center text-gray-800">Register</h2>
-                {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded">{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">Full Name</label>
+
+                {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded border border-red-200">{error}</div>}
+                {successMessage && <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded border border-green-200">{successMessage}</div>}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block mb-1 text-sm font-medium text-gray-700">Full Name</label>
                         <div className="relative">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <User size={18} />
                             </span>
                             <input
                                 type="text"
-                                className="w-full py-2 pl-10 pr-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
+                                placeholder="John Doe"
                             />
                         </div>
-
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">Phone Number</label>
+                    <div>
+                        <label className="block mb-1 text-sm font-medium text-gray-700">Phone Number</label>
                         <div className="relative">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <User size={18} />
                             </span>
                             <input
                                 type="tel"
-                                className="w-full py-2 pl-10 pr-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 required
+                                placeholder="+91 98765 43210"
                             />
                         </div>
                     </div>
-                    <div className="mb-4">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">Email</label>
+
+                    <div>
+                        <label className="block mb-1 text-sm font-medium text-gray-700">Email Address</label>
                         <div className="relative">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <Mail size={18} />
                             </span>
                             <input
                                 type="email"
-                                className="w-full py-2 pl-10 pr-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
+                                placeholder="you@example.com"
                             />
                         </div>
                     </div>
-                    <div className="mb-6">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">Password</label>
+
+                    <div>
+                        <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
                         <div className="relative">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <Lock size={18} />
                             </span>
                             <input
                                 type="password"
-                                className="w-full py-2 pl-10 pr-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                                placeholder="••••••••"
                             />
                         </div>
                     </div>
-                    <button
-                        type="submit"
-                        className="w-full py-2 font-bold text-white transition bg-primary-600 rounded hover:bg-primary-700 disabled:opacity-50"
-                        disabled={loading}
-                    >
-                        {loading ? 'Registering...' : 'Register'}
-                    </button>
-                </form>
-                <p className="mt-4 text-sm text-center text-gray-600">
-                    Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
-                </p>
-                <p className="mt-4 text-sm text-center text-gray-600">
-                    Back to home page? <Link to="/" className="text-blue-500 hover:underline">Home</Link>
-                </p>
-            </div>
 
-            {/* QR Code Modal */}
-            {showModal && (
-                <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div
-                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                            aria-hidden="true"
-                            onClick={handleClose}
-                        ></div>
+                    {/* Payment Section */}
+                    <div className="pt-4 border-t border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Payment Details</h3>
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 flex flex-col items-center">
+                            <p className="text-sm text-gray-600 mb-2">Scan to pay <span className="font-bold text-gray-900">₹500</span></p>
+                            <img
+                                src={qrCode}
+                                alt="Payment QR Code"
+                                className="h-40 w-40 object-contain border border-white bg-white shadow-sm p-1 rounded-md"
+                            />
+                            <p className="mt-2 text-xs text-center text-gray-500">
+                                UPI ID: letterdrafting@upi <br />
+                                <span className="text-[10px]">(Scan with GPay, PhonePe, Paytm)</span>
+                            </p>
+                        </div>
 
-                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
-                            <div className="absolute top-0 right-0 pt-4 pr-4">
-                                <button
-                                    type="button"
-                                    className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
-                                    onClick={handleClose}
-                                >
-                                    <span className="sr-only">Close</span>
-                                    <X className="h-6 w-6" aria-hidden="true" />
-                                </button>
-                            </div>
-                            <div>
-                                <div className="mt-3 text-center sm:mt-5">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                        Scan to Pay
-                                    </h3>
-                                    <div className="mt-4">
-                                        <img
-                                            src={qrCode}
-                                            alt="Payment QR Code"
-                                            className="mx-auto h-64 w-64 object-contain border border-gray-200 rounded-lg"
-                                        />
-                                        <p className="mt-2 text-sm text-gray-500">
-                                            Registration Successful! <br />
-                                            Scan this QR code with any UPI app to pay ₹500.
-                                            <br />
-                                            <span className="text-xs text-gray-400">Your account will be approved after payment verification.</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-5 sm:mt-6">
-                                <button
-                                    type="button"
-                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:text-sm"
-                                    onClick={handleClose}
-                                >
-                                    Done
-                                </button>
-                            </div>
+                        <div>
+                            <label className="block mb-1 text-sm font-medium text-gray-700">Upload Payment Screenshot <span className="text-red-500">*</span></label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                required
+                                className="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-md file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-indigo-50 file:text-indigo-700
+                                    hover:file:bg-indigo-100
+                                "
+                            />
+                            <p className="mt-1 text-xs text-gray-500">Please upload the screenshot of your successful payment.</p>
                         </div>
                     </div>
+
+                    <button
+                        type="submit"
+                        className="w-full py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-6"
+                        disabled={loading}
+                    >
+                        {loading ? 'Processing...' : 'Register'}
+                    </button>
+                </form>
+
+                <div className="mt-6 text-center space-y-2">
+                    <p className="text-sm text-gray-600">
+                        Already have an account? <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">Login</Link>
+                    </p>
+                    <p className="text-sm text-gray-600">
+                        <Link to="/" className="font-medium text-gray-500 hover:text-gray-900">Back to Home</Link>
+                    </p>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

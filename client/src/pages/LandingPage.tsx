@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, Zap, LayoutTemplate, Smartphone } from 'lucide-react';
 
 const LandingPage = () => {
+    const [videoLanguage, setVideoLanguage] = useState<'hindi' | 'english'>('hindi');
+
     return (
         <main className="flex-grow">
             {/* Hero Section */}
@@ -85,6 +88,50 @@ const LandingPage = () => {
                                 Draft, edit, and send letters directly from your smartphone. A fully responsive experience.
                             </p>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Video Section */}
+            <section className="py-16 bg-white border-t border-gray-100">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">
+                        See How It Works
+                    </h2>
+
+                    <div className="mb-6 flex justify-center space-x-4">
+                        <button
+                            onClick={() => setVideoLanguage('hindi')}
+                            className={`px-6 py-2 rounded-full font-medium transition-colors ${videoLanguage === 'hindi'
+                                ? 'bg-indigo-600 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
+                        >
+                            Hindi
+                        </button>
+                        <button
+                            onClick={() => setVideoLanguage('english')}
+                            className={`px-6 py-2 rounded-full font-medium transition-colors ${videoLanguage === 'english'
+                                ? 'bg-indigo-600 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
+                        >
+                            English
+                        </button>
+                    </div>
+
+                    <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-2xl shadow-xl bg-gray-900">
+                        <iframe
+                            className="absolute top-0 left-0 w-full h-full"
+                            src={videoLanguage === 'hindi'
+                                ? "https://www.youtube.com/embed/dQw4w9WgXcQ" // Replace with Hindi Video ID
+                                : "https://www.youtube.com/embed/dQw4w9WgXcQ" // Replace with English Video ID
+                            }
+                            title="Product Demo"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
                     </div>
                 </div>
             </section>

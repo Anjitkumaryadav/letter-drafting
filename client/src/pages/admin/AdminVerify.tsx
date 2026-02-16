@@ -12,6 +12,7 @@ interface UserData {
     createdAt: string;
     isHeld: boolean;
     isDeleted: boolean;
+    paymentScreenshot?: string;
 }
 
 interface ContactData {
@@ -43,13 +44,13 @@ const AdminVerify: React.FC = () => {
         setError('');
         try {
             if (activeTab === 'queries') {
-                const response = await axios.get('https://letter-drafting.onrender.com/contacts', {
+                const response = await axios.get('http://localhost:3000/contacts', {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } // Ensure auth header if needed, though axios interceptor might handle it. Adding explicitly to be safe as controller is guarded.
                 });
                 setContacts(response.data);
             } else {
                 const endpoint = activeTab === 'pending' ? 'pending' : activeTab === 'deleted' ? 'deleted' : 'active';
-                const response = await axios.get(`https://letter-drafting.onrender.com/users/${endpoint}`);
+                const response = await axios.get(`http://localhost:3000/users/${endpoint}`);
                 setUsers(response.data);
             }
         } catch (err: any) {
@@ -73,7 +74,7 @@ const AdminVerify: React.FC = () => {
 
         setActionLoading(id);
         try {
-            let url = `https://letter-drafting.onrender.com/users/${id}`;
+            let url = `http://localhost:3000/users/${id}`;
             let method: 'patch' | 'delete' = 'patch';
 
             switch (action) {
@@ -226,6 +227,19 @@ const AdminVerify: React.FC = () => {
                                                     <Phone size={14} className="text-neutral-400" />
                                                     <a href={`tel:${userData.phone}`} className="hover:text-primary-600 hover:underline transition-colors">{userData.phone}</a>
                                                 </div>
+                                                {/* Payment Screenshot */}
+                                                {userData.paymentScreenshot && (
+                                                    <div className="w-full mt-2">
+                                                        <p className="text-xs font-semibold text-neutral-500 mb-1">Payment Screenshot:</p>
+                                                        <a href={userData.paymentScreenshot} target="_blank" rel="noopener noreferrer" className="block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:border-indigo-500 transition-colors">
+                                                            <img
+                                                                src={userData.paymentScreenshot}
+                                                                alt="Payment Screenshot"
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </a>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
