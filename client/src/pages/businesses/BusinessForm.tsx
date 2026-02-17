@@ -32,7 +32,7 @@ const BusinessForm: React.FC = () => {
 
     const fetchBusiness = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/businesses/${id}`);
+            const response = await axios.get(`https://letter-drafting.onrender.com/businesses/${id}`);
             // Map old logoUrl to headerImage if headerImage is missing (migration support)
             const data = response.data;
             if (data.logoUrl && !data.headerImage) {
@@ -63,7 +63,7 @@ const BusinessForm: React.FC = () => {
         uploadData.append('file', file);
 
         try {
-            const response = await axios.post('http://localhost:3000/upload', uploadData, {
+            const response = await axios.post('https://letter-drafting.onrender.com/upload', uploadData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setFormData((prev) => ({ ...prev, [field]: response.data.url }));
@@ -80,9 +80,9 @@ const BusinessForm: React.FC = () => {
         setLoading(true);
         try {
             if (isEditing) {
-                await axios.patch(`http://localhost:3000/businesses/${id}`, formData);
+                await axios.patch(`https://letter-drafting.onrender.com/businesses/${id}`, formData);
             } else {
-                await axios.post('http://localhost:3000/businesses', formData);
+                await axios.post('https://letter-drafting.onrender.com/businesses', formData);
             }
             navigate('/');
         } catch (error) {
@@ -134,7 +134,7 @@ const BusinessForm: React.FC = () => {
                                 <p className="text-sm font-medium text-gray-700 mb-2">Letter Header (Top Banner)</p>
                                 <p className="text-xs text-gray-500 mb-3">Rectangular full-width image</p>
                                 {formData.headerImage && (
-                                    <img src={formData.headerImage.startsWith('http') ? formData.headerImage : `http://localhost:3000${formData.headerImage}`} alt="Header Preview" className="h-16 w-full object-contain mb-3 bg-white border" />
+                                    <img src={formData.headerImage.startsWith('http') ? formData.headerImage : `https://letter-drafting.onrender.com${formData.headerImage}`} alt="Header Preview" className="h-16 w-full object-contain mb-3 bg-white border" />
                                 )}
                                 <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
                                     <Upload size={16} className="mr-2" />
@@ -148,7 +148,7 @@ const BusinessForm: React.FC = () => {
                                 <p className="text-sm font-medium text-gray-700 mb-2">Letter Footer (Bottom Banner)</p>
                                 <p className="text-xs text-gray-500 mb-3">Rectangular full-width image</p>
                                 {formData.footerImage && (
-                                    <img src={formData.footerImage.startsWith('http') ? formData.footerImage : `http://localhost:3000${formData.footerImage}`} alt="Footer Preview" className="h-16 w-full object-contain mb-3 bg-white border" />
+                                    <img src={formData.footerImage.startsWith('http') ? formData.footerImage : `https://letter-drafting.onrender.com${formData.footerImage}`} alt="Footer Preview" className="h-16 w-full object-contain mb-3 bg-white border" />
                                 )}
                                 <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
                                     <Upload size={16} className="mr-2" />
@@ -162,7 +162,7 @@ const BusinessForm: React.FC = () => {
                                 <p className="text-sm font-medium text-gray-700 mb-2">Company Seal (Optional)</p>
                                 <p className="text-xs text-gray-500 mb-3">Round stamp/seal image</p>
                                 {formData.sealUrl && (
-                                    <img src={formData.sealUrl.startsWith('http') ? formData.sealUrl : `http://localhost:3000${formData.sealUrl}`} alt="Seal Preview" className="h-24 w-24 object-contain mx-auto mb-3 bg-white border rounded-full" />
+                                    <img src={formData.sealUrl.startsWith('http') ? formData.sealUrl : `https://letter-drafting.onrender.com${formData.sealUrl}`} alt="Seal Preview" className="h-24 w-24 object-contain mx-auto mb-3 bg-white border rounded-full" />
                                 )}
                                 <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
                                     <Upload size={16} className="mr-2" />
@@ -191,7 +191,7 @@ const BusinessForm: React.FC = () => {
                         {/* Header Preview */}
                         <div className="w-full h-24 bg-gray-50 border-b-2 border-gray-100 flex items-center justify-center overflow-hidden">
                             {formData.headerImage ? (
-                                <img src={formData.headerImage.startsWith('http') ? formData.headerImage : `http://localhost:3000${formData.headerImage}`} alt="Header" className="w-full h-full object-contain" />
+                                <img src={formData.headerImage.startsWith('http') ? formData.headerImage : `https://letter-drafting.onrender.com${formData.headerImage}`} alt="Header" className="w-full h-full object-contain" />
                             ) : (
                                 <span className="text-gray-400 text-sm">Header Image</span>
                             )}
@@ -207,14 +207,14 @@ const BusinessForm: React.FC = () => {
                         {/* Seal Preview (Absolute) */}
                         {formData.sealUrl && (
                             <div className="absolute bottom-32 right-10 h-24 w-24 flex items-center justify-center pointer-events-none opacity-80 rotate-[-10deg]">
-                                <img src={formData.sealUrl.startsWith('http') ? formData.sealUrl : `http://localhost:3000${formData.sealUrl}`} alt="Seal" className="h-full w-full object-contain" />
+                                <img src={formData.sealUrl.startsWith('http') ? formData.sealUrl : `https://letter-drafting.onrender.com${formData.sealUrl}`} alt="Seal" className="h-full w-full object-contain" />
                             </div>
                         )}
 
                         {/* Footer Preview */}
                         <div className="w-full h-16 bg-gray-50 border-t-2 border-gray-100 flex items-center justify-center overflow-hidden mt-4">
                             {formData.footerImage ? (
-                                <img src={formData.footerImage.startsWith('http') ? formData.footerImage : `http://localhost:3000${formData.footerImage}`} alt="Footer" className="w-full h-full object-contain" />
+                                <img src={formData.footerImage.startsWith('http') ? formData.footerImage : `https://letter-drafting.onrender.com${formData.footerImage}`} alt="Footer" className="w-full h-full object-contain" />
                             ) : (
                                 <span className="text-gray-400 text-sm">Footer Image</span>
                             )}

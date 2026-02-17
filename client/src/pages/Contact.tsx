@@ -29,7 +29,7 @@ const Contact = () => {
         }
 
         try {
-            await axios.post('http://localhost:3000/contacts', {
+            await axios.post('https://letter-drafting.onrender.com/contacts', {
                 name: `${formData.firstName} ${formData.lastName}`.trim(),
                 email: formData.email,
                 phone: formData.phone,

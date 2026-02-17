@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Building2, Users, FileText, Menu, X } from 'lucide-react';
+import { LogOut, Building2, Users, FileText } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import Footer from './Footer';
 import logo from '../assets/logo.png';
@@ -8,10 +8,6 @@ import logo from '../assets/logo.png';
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-
-    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-    const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -21,134 +17,86 @@ const Layout: React.FC = () => {
         { path: '/recipients', label: 'Recipients', icon: Users },
     ];
 
-    //   const navItems = [
-    //     { path: '/letter-draft', label: 'Letters'},
-    //     { path: '/businesses', label: 'Businesses'},
-    //     { path: '/recipients', label: 'Recipients' },
-    // ];
     if (user?.admin) {
-        navItems.push({ path: '/admin/verify', label: 'User Management', icon: Users });
+        // Admin link is handled separately in Row 2 as per request
     }
 
     return (
         <div className="min-h-screen bg-neutral-50 flex flex-col font-sans overflow-x-hidden">
-            {/* Navbar */}
-            <nav className="bg-white/80 backdrop-blur-md border-b border-neutral-200 sticky top-0 z-50">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        {/* Logo & Desktop Nav */}
-                        <div className="flex items-center gap-2">
-                            <Link to="/letter-draft" className="flex items-center gap-2 group">
-                                <span className="text-xl font-extrabold tracking-tight text-blue-700"><img className="w-12 h-10" src={logo} alt="logo" /></span>
+            {/* Navbar - Mobile First Design */}
+            <nav className="bg-white/90 backdrop-blur-xl border-b border-neutral-200 sticky top-0 z-50 shadow-sm transition-all duration-300">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                    <div className="flex flex-col gap-3">
+                        {/* Row 1: Logo & Main Navigation */}
+                        <div className="flex items-center justify-between">
+                            {/* Logo - Bigger as requested */}
+                            <Link to="/letter-draft" className="flex-shrink-0 group hover:opacity-90 transition-opacity">
+                                <img className="w-16 h-auto sm:w-20" src={logo} alt="Bharat Business" />
                             </Link>
 
-                            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mask-gradient pr-1">
+                            {/* Main Nav Items */}
+                            <div className="flex items-center gap-1 sm:gap-2">
                                 {navItems.map((item) => (
                                     <Link
                                         key={item.path}
                                         to={item.path}
-                                        className={`flex-shrink-0 flex items-center px-2 sm:px-2 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200  
-                                        ${item.path === '/admin/verify' ? 'hidden md:flex' : ''}
+                                        className={`flex flex-col sm:flex-row items-center justify-center px-3 py-2 rounded-xl text-[10px] sm:text-sm font-semibold transition-all duration-200 group
                                         ${isActive(item.path)
                                                 ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-100'
-                                                : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                                                : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
                                             }`}
                                     >
-                                        <item.icon size={16} className={`mr-1.5 sm:mr-2 ${isActive(item.path) ? 'text-primary-600' : 'text-neutral-400'}`} />
-                                        {item.label}
+                                        <item.icon size={20} strokeWidth={isActive(item.path) ? 2.5 : 2} className={`mb-1 sm:mb-0 sm:mr-2 transition-transform group-hover:scale-110 ${isActive(item.path) ? 'text-primary-600' : 'text-neutral-400'}`} />
+                                        <span>{item.label}</span>
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
-                        {/* User Profile & Mobile Actions */}
-                        <div className="flex items-center gap-2 sm:gap-4 ml-auto pl-2">
-                            <div className="hidden md:flex items-center gap-3 pl-4 border-l border-neutral-200">
-                                <div className="flex flex-col items-end">
-                                    <span className="text-sm font-semibold text-neutral-800 leading-none">{user?.name}</span>
-                                    <span className="text-xs text-neutral-500 mt-1">{user?.email}</span>
+                        {/* Row 2: Admin & User Actions */}
+                        <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
+                            {/* User Info */}
+                            <div className="flex items-center gap-2 text-neutral-600">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary-100 to-primary-50 text-primary-700 flex items-center justify-center font-bold text-xs ring-2 ring-white shadow-sm">
+                                    {user?.name?.charAt(0).toUpperCase()}
                                 </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-bold text-neutral-800 leading-none">{user?.name}</span>
+                                    {user?.admin && <span className="text-[10px] text-primary-600 font-semibold bg-primary-50 px-1.5 py-0.5 rounded mt-0.5 w-fit">ADMIN</span>}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                {user?.admin && (
+                                    <Link
+                                        to="/admin/verify"
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                                        ${isActive('/admin/verify')
+                                                ? 'bg-neutral-800 text-white shadow-md'
+                                                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                                            }`}
+                                    >
+                                        <Users size={14} />
+                                        <span>Manage Users</span>
+                                    </Link>
+                                )}
+
                                 <button
                                     onClick={logout}
-                                    className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Logout"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100"
+                                    title="Sign Out"
                                 >
-                                    <LogOut size={20} />
+                                    <LogOut size={14} />
+                                    <span>Sign Out</span>
                                 </button>
                             </div>
-
-                            {/* Mobile Menu Button - Logout/Profile Only */}
-                            <button
-                                onClick={toggleMobileMenu}
-                                className="md:hidden p-2 rounded-lg text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200 transition-colors"
-                                aria-label="Menu"
-                            >
-                                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                            </button>
                         </div>
-                    </div>
-
-                    {/* Admin Link - Mobile Only (Next Line) */}
-                    {user?.admin && (
-                        <div className="md:hidden pb-2 -mt-1 flex">
-                            <Link
-                                key="/admin/verify"
-                                to="/admin/verify"
-                                className={`flex-1 flex items-center justify-center px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 bg-neutral-100 border border-neutral-200 ${isActive('/admin/verify')
-                                    ? 'bg-neutral-900 text-white border-neutral-900'
-                                    : 'text-neutral-600'
-                                    }`}
-                            >
-                                <Users size={14} className="mr-1.5" />
-                                Verify Accounts
-                            </Link>
-                        </div>
-                    )}
-                </div>
-
-                {/* Mobile Menu Overlay */}
-                <div
-                    className={`md:hidden fixed inset-0 z-40 bg-neutral-900/20 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                        }`}
-                    onClick={closeMobileMenu}
-                />
-
-                {/* Mobile Menu Content - Profile & Logout Only */}
-                <div
-                    className={`md:hidden fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                        }`}
-                >
-                    <div className="p-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
-                        <span className="font-semibold text-neutral-900">Account</span>
-                        <button onClick={closeMobileMenu} className="p- text-neutral-500 hover:bg-neutral-100 rounded-lg">
-                            <X size={20} />
-                        </button>
-                    </div>
-
-                    <div className="p-4">
-                        <div className="flex items-center gap-3 mb-6 bg-neutral-50 p-3 rounded-xl border border-neutral-100">
-                            <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xl border-2 border-white shadow-sm">
-                                {user?.name?.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="overflow-hidden">
-                                <p className="text-sm font-bold text-neutral-900 truncate">{user?.name}</p>
-                                <p className="text-xs text-neutral-500 truncate">{user?.email}</p>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => { closeMobileMenu(); logout(); }}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 transition-all shadow-sm"
-                        >
-                            <LogOut size={18} />
-                            Sign Out
-                        </button>
                     </div>
                 </div>
             </nav>
 
             {/* Main Content */}
-            <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
+            <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in text-base">
                 <Outlet />
             </main>
             <Footer />
