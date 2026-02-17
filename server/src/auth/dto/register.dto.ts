@@ -14,4 +14,7 @@ export class RegisterDto {
 
     @IsNotEmpty()
     phone: string;
+
+    @IsNotEmpty()
+    paymentScreenshot: string;
 }

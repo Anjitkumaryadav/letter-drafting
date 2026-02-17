@@ -3,12 +3,12 @@ import logo from '../assets/logo.png';
 
 const PublicNavbar = () => {
     return (
-        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200 transition-all duration-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex-shrink-0 flex items-center">
                         <Link to="/" className="ml-2 text-2xl sm:text-4xl font-extrabold tracking-tight text-blue-700">
-                            <img className="w-10 h-10 sm:w-16 sm:h-16" src={logo} alt="Quick Letters" />
+                            <img className="w-16 h-16 sm:w-20 sm:h-20" src={logo} alt="Quick Letters" />
                         </Link>
                     </div>
                     <div className="flex items-center space-x-2 sm:space-x-4">

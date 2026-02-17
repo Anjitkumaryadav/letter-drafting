@@ -168,7 +168,7 @@ const Contact = () => {
                                 </dt>
                                 <dd className="flex text-base text-indigo-50">
                                     <Mail className="flex-shrink-0 w-6 h-6 text-indigo-200" aria-hidden="true" />
-                                    <span className="ml-3">support@bharatbusinessdeals.com</span>
+                                    <span className="ml-3">support@quickletters.online</span>
                                 </dd>
                                 <dt>
                                     <span className="sr-only">Address</span>

@@ -34,6 +34,9 @@ export class User {
 
     @Prop({ required: false })
     deletedAt: Date;
+
+    @Prop({ required: true })
+    paymentScreenshot: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

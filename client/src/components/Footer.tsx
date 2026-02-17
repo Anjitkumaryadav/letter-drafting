@@ -57,9 +57,9 @@ const Footer = () => {
                         &copy; {new Date().getFullYear()} Quick Letters. All rights reserved.
                     </p>
                     <div className="items-center flex">
-                        <a href="mailto:support@bharatbusinessdeals.com" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                        <a href="mailto:support@quickletters.online" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
                             <Mail className="h-4 w-4 mr-2" />
-                            support@bharatbusinessdeals.com
+                            support@quickletters.online
                         </a>
                     </div>
                 </div>
