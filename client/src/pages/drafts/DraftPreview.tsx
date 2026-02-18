@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { ArrowLeft, CheckCircle, Printer, Move, Save, RotateCcw, PenLine, Crop as CropIcon, X, Image as ImageIcon, Type } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Printer, Move, Save, RotateCcw, Crop as CropIcon, X, Type } from 'lucide-react';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
@@ -19,12 +19,7 @@ interface Business {
     sealUrl?: string;
 }
 
-interface TouchState {
-    startX: number;
-    startY: number;
-    initialItemX: number;
-    initialItemY: number;
-}
+
 
 interface Recipient {
     _id: string;
@@ -114,15 +109,7 @@ const DraftPreview: React.FC = () => {
     const imgRef = useRef<HTMLImageElement>(null);
     const [isTextEditing, setIsTextEditing] = useState(false);
 
-    const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setCrop(undefined); // Makes crop preview update between images.
-            const reader = new FileReader();
-            reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
-            reader.readAsDataURL(e.target.files[0]);
-            setCropModalOpen(true);
-        }
-    };
+
 
     const handleImageClick = (type: 'header' | 'footer' | 'seal', url?: string) => {
         if (!isCustomizing && !isTextEditing) return; // Only allow crop in edit/customize modes
