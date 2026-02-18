@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import {
     Check, X, Trash2, Mail, Phone, Search,
-    Filter, RefreshCw, AlertTriangle, Shield,
-    MoreVertical, FileText, ChevronDown, RotateCcw
+    RefreshCw, AlertTriangle, RotateCcw
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -43,7 +42,7 @@ const AdminVerify: React.FC = () => {
     const [contacts, setContacts] = useState<ContactData[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
-    const [error, setError] = useState('');
+    const [, setError] = useState('');
     const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'deleted' | 'queries'>('pending');
     const [searchTerm, setSearchTerm] = useState('');
     const { token } = useAuth();
